@@ -1,0 +1,292 @@
+<html>
+
+<head>
+    <title>Kinderstudien am MPI-EVA</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/manifest.json">
+    <link rel="mask-icon" href="favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="favicon/favicon.ico">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-config" content="/favicon/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+    <script src="jquery-1.11.2.min.js"></script>
+    <script src="data_submission.js"></script>
+    <script src="symlit_helpers.js"></script>
+    <!-- <script src="silent-recorder.js" async></script> -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+
+    <div class="slide" id="instructions">
+        <p class="block-text" style="Top: 50%">
+            <!-- <center>
+                <br> Version <br>
+                <input type="number" id="version" name="version" size="30">
+            </center> -->
+            <br>
+            <center>
+                <br> Kind ID <br>
+                <input type="text" id="id" name="id" size="30">
+            </center>
+        </p>
+
+        <center style="z-index:2">
+            <button type="button" onClick="checkInput()">Los geht's</button>
+            <div id="checkMessage"> </div>
+        </center>
+    </div>
+
+
+    <div class="slide" id="trainingDot">
+
+        <p id='logo-text' style="z-index: -2;">Tippe auf alle Punkte</p>
+
+    </div>
+
+    <!-- touch training -->
+    <div class="slide" id="dotGame">
+
+        <div class='barl'></div>
+        <div class='barr'></div>
+
+        <br><br>
+        <p id='logo-text'>Super gemacht!</p>
+        <center>
+            <button type="button" onClick="this.blur(); showSlide('select')" style=" WIDTH: 200px ">Weiter
+        zu den
+        Spielen</button>
+        </center>
+
+        <img src="images/praise.png" style="position:absolute;top: 250px;left: 50%; WIDTH: 200px; margin-left: -100px;z-index:-1;">
+
+    </div>
+
+
+
+    <!-- Study Consent Slide -->
+    <div class="slide" id="study-consent">
+
+        <div class='barl'></div>
+        <div class='barr'></div>
+
+
+        <div align="center">
+            <p id='logo-text'>Zustimmungserklärung für Videoaufzeichnung</p>
+            <table style="width:100%">
+                <tbody>
+                    <p class="block-text" align="center">
+                        Um die Studie durchf&uuml;hren zu k&ouml;nnen, brauchen Sie einen Laptop oder ein Tablet. Smartphones funktionieren leider nicht, weil der Bildschirm zu klein ist. Bitte stellen Sie sicher, dass der Ton eingeschaltet ist.
+                    </p>
+
+                    <p class="block-text" align="center">
+                        Bitte setzen Sie ihr Kind gerade vor den Bildschirm, so dass er oder sie eine gute &Uuml;bersicht hat. Sie selbst sitzen am besten rechts oder links daneben. Wichtig ist, dass Sie auch sehen, was auf dem Bildschirm vor sich geht.
+                    </p>
+
+
+                    <p class="block-text" align="center">
+                        F&uuml;r diese Studie ist es notwendig, dass wir Sie und Ihr Kind mit Hilfe Ihrer Webcam aufzeichnen - nur so k&ouml;nnen wir die Antworten Ihres Kindes richtig zuordnen. Diese Videos werden ebenfalls auf einem sicheren Server am Max-Planck-Institut in
+                        Leipzig gespeichert und nicht an Dritte weitergegeben.
+                    </p>
+
+                    <p class="block-text" align="center">
+                        Der Webbrowser "Safari" bereitet ein paar Probleme. Falls m&ouml;glich, &ouml;ffnen Sie die Seite einfach in einem anderen Browser (zum Beispiel: Chrome, Firefox, Edge, etc.). Falls nicht, k&ouml;nnen Sie nat&uuml;rlich trotzem an der Studie teilnehmen,
+                        ihre Videos k&ouml;nnen jedoch nicht gespeichert werden. Sie bekommen dann am Ende der Studie eine Fehlermeldung, die Sie einfach ignorieren können.
+                    </p>
+
+                    <p class="block-text" align="center">
+                        Wenn Sie auf den Knopf "Webcam-Vorschau" klicken werden sie gefragt, ob Sie unserer Website erlauben wollen Ihre Webcam zu nutzen. Dem m&uuml;ssten Sie zustimmen. Dann öffnet sich ein Fenster in dem Sie das Bild sehen, welches ihre Webcam aufzeichnet.
+                        Bitte positionieren Sie sich und Ihr Kind so, dass Sie beide gut zu sehen sind. Wenn alle bereit sind, schließen Sie das Fenster (einfach daneben klicken) und klicken sie dann auf "Weiter".
+                    </p>
+
+                    <!-- <img
+            src="images/webcam-confirmation-dialog.gif"
+            alt="Zustimmungsdialog für Audio- & Videoaufzeichnung"
+            style="width: 200px;"
+            > -->
+
+                    <p style="text-align: center;">
+                        <button type="button" onclick="startStream(), modalContent('#video-preview')" style="border-radius: 15px;">
+                Webcam-Vorschau
+              </button>
+                    </p>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div align="center">
+            <button type="button" onclick="startRecorder(), showSlide('intro')">Weiter</button>
+        </div>
+    </div>
+
+
+
+
+
+
+    <!-- The intro slide. -->
+    <div class="slide" id="intro">
+
+        <div class='barl'></div>
+        <div class='barr'></div>
+
+
+        <div align="center">
+            <p id='logo-text'>Anleitung</p>
+            <table style="width:100%">
+                <tbody>
+
+                    <p class="block-text" align="center">
+                        Wir brauchen Ihre Hilfe als StudienleiterIn. Auf manchen Seiten steht etwas Text, der den Kindern erkl&auml;rt, worum es in den Spielen geht. Als StudienleiterIn lesen Sie Ihrem Kind diesen Text bitte vor. Nehmen Sie sich dafür Zeit und lesen Sie langsam
+                        und deutlich.
+                    </p>
+
+                    <p class="block-text" align="center">
+                        Sie können sich so viel Zeit für die Spiele nehmen, wie Sie möchten. Falls Ihr Kind unruhig wird oder sich langweilt, können Sie auch gerne jederzeit eine kurze Pause machen.
+                    </p>
+
+                    <p class="block-text" align="center">
+                        Um in einem Spiel fortzufahren, klicken/tippen Sie auf den grauen Knopf am unteren Bildrand. Wenn kein Knopf erscheint, ist ihr Kind an der Reihe. In diesen F&auml;llen stellt das Tier auch immer eine Frage. Um zu antworten, w&auml;hlt ihr Kind eine Sache
+                        aus. Wenn Sie ein Gerät haben, das man über den Bildschirm steuert ("Touchscreen"), kann Ihr Kind direkt auf die Objekte tippen. Wenn Sie Ihr Gerät über Maus und Tastatur steuern, kann Ihr Kind auf die Objekte zeigen und Sie klicken
+                        bitte mit der Maus darauf. Sie sind dann der digitale Finger Ihres Kindes.
+                    </p>
+
+
+                    <p class="block-text" align="center">
+                        Wenn Ihr Kind unsicher ist und um Rat fragt, sagen Sie bitte "Zeig, was Du denkst". Bitte helfen Sie Ihrem Kind nicht bei den Aufgaben - wir wollen ja etwas über Kinder lernen!
+                    </p>
+
+                    <p class="block-text" align="center">
+                        Als allererstes wollen wir das Ausw&auml;hlen einmal &uuml;ben. Auf der n&auml;chsten Seite erscheinen ein paar bunte Punkte. Ihr Kind kann die Punkte verschwinden lassen, indem es darauf tippt oder darauf zeigt. Falls Sie die Maus steuern, klicken Sie
+                        bitte auf den Punkt, auf den Ihr Kind gezeigt hat. Los geht's!
+                    </p>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div align="center">
+            <button type="button" onClick="this.blur(); train.trainingDot()">Weiter</button>
+        </div>
+    </div>
+
+
+    <div class="slide" id="inf_training">
+
+
+
+        <div align="center" width="100%">
+            <p id='logo-text'>Anleitung</p>
+            <table style="width:100%">
+                <tbody>
+                    <p class="block-text">
+                        Das ist Tiger. Tiger geht in den Spielzeugladen, um ein paar Spielzeuge auszusuchen. Willst Du Tiger helfen die Spielzeuge auszusuchen?
+                    </p>
+
+                    <p class="block-text">
+                        Tiger erz&auml;hlt Dir immer, was besonders ist an einem Spielzeug. Dann musst Du ihr helfen, noch so ein Spielzeug zu finden. Wenn Du das Spielzeug gefunden hast, kannst Du darauf tippen.
+                    </p>
+                </tbody>
+            </table>
+
+
+
+            <nextButton type="button" onClick="this.blur(); simple_inf.next()">Los geht's</nextButton>
+        </div>
+    </div>
+
+
+
+    <!-- The main slide. -->
+    <div class="slide" id="stage">
+
+        <audio id="sound" src=""></audio>
+
+        <img id="blocksdown" class="agent" src="images/agent/base.png">
+        <img id="hidebanana" class="agent" src="images/agent/base.png">
+        <img id="hidebanana_fam" class="agent" src="images/agent/base.png">
+        <img id="look" class="agent" src="images/agent/base.png">
+        <img id="open" class="agent" src="images/agent/base.png">
+        <img id="placeblocks" class="agent" src="images/agent/base.png">
+        <img id="play" class="agent" src="images/agent/base.png">
+        <img id="base" class="agent" src="images/agent/base.png">
+        <img id="choice" class="agent" src="images/agent/base.png">
+        <img id="occluderdown" class="agent" src="images/agent/base.png">
+        <img id="showcue" class="agent" src="images/agent/base.png">
+
+        <img id="eyesclosed" class="agent" src="images/agent/eyesclosed.png">
+        <img id="holdbanana" class="agent" src="images/agent/holdbanana.png">
+        <img id="holdblocks" class="agent" src="images/agent/holdblocks.png">
+        <img id="blocksup" class="agent" src="images/agent/holdbanana.png">
+        <img id="occluderup" class="agent" src="images/agent/holdbanana.png">
+        <img id="holdemptyhands" class="agent" src="images/agent/holdemptyhands.png">
+        <img id="holdpaper" class="agent" src="images/agent/holdpaper.png">
+        <img id="holdpaperpen" class="agent" src="images/agent/holdpaperpen.png">
+        <img id="draw" class="agent" src="images/agent/holdpaperpen.png">
+        <img id="help" class="agent" src="images/agent/holdpaper.png">
+        <img id="helpwhere" class="agent" src="images/agent/holdpaper.png">
+
+        <img id="leftChoiceBlock" class="leftChoiceBlock" src="images/choiceblock.png">
+
+        <img id="rightChoiceBlock" class="rightChoiceBlock" src="images/choiceblock.png">
+
+        <img id="occluder" class="occluder" src="images/occluder.png">
+
+        <img id="leftObject" class="leftObject" src="">
+        <img id="rightObject" class="rightObject" src="">
+
+        <img id="cue" class="cue" src="">
+        <img id="cuepaper" class="cuepaper" src="">
+
+        <img id="button" class="button" src="images/button.png">
+        <img id="exitButton" class="exitButton" src="images/exit.png">
+        <img id="refillButton" class="refillButton" src="images/refill.png">
+
+    </div>
+
+    <!--  choice slide-->
+
+    <div class="slide" id="transition">
+
+
+    </div>
+
+    <!--  eat slide-->
+
+
+
+
+
+
+
+
+
+    <!-- The finish slide. -->
+    <div class="slide" id="finished">
+
+        <div class='barl'></div>
+        <div class='barr'></div>
+        <div style="width: 100%; margin: 0 auto; text-align: center; ">
+
+            <img src="images/intro.png" style="position:absolute;top: 220px;left: 50%; margin-left: -250 ;WIDTH: 500px;">
+
+        </div>
+
+        <center>
+            <p id='logo-text'>Vielen Dank für's Mitspielen!</p>
+        </center>
+
+
+    </div>
+
+    <script src="symlit.js"></script>
+
+
+
+</body>
+
+</html>

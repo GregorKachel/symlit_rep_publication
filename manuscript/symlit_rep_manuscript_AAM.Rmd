@@ -1,0 +1,4140 @@
+---
+title             : "Young Children’s Spontaneous Comprehension of Symbol-Referent Relationships in the Graphic Domain"
+shorttitle        : "Comprehension of Graphic Symbol-Referent Relationships"
+author: 
+  - name          : "Gregor Kachel"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "Universitätsallee 1, C1.008a, 21335 Lüneburg"
+    email         : "gregor.kachel&#64;leuphana.de"
+    role: # Contributorship roles (e.g., CRediT, https://credit.niso.org/)
+      - "Conceptualization"
+      - "Funding Acquisition"
+      - "Project Administration"
+      - "Investigation"
+      - "Methodology"
+      - "Data Curation"
+      - "Formal Analysis"
+      - "Visualization"
+      - "Writing - Original Draft Preparation"
+      - "Writing - Review & Editing"
+  - name          : "Daniel Haun"
+    affiliation   : "2"
+    role:
+      - "Resources"
+      - "Writing - Review & Editing"
+  - name          : "Manuel Bohn"
+    affiliation   : "1"
+    role:
+      - "Methodology"
+      - "Software"
+      - "Formal Analysis"
+      - "Validation"
+      - "Writing - Review & Editing"
+      - "Supervision"
+affiliation:
+  - id            : "1"
+    institution   : "Leuphana University"
+  - id            : "2"
+    institution   : "Max-Planck-Institute for Evolutionary Anthropology"
+note: "\\clearpage"
+authornote: |
+    
+    
+    *Ethics, consent and conflict of interest*: The study obtained ethical clearance from the MPG Ethics Commission in Munich, Germany, falling under an umbrella ethics application (Appl. No. 2021_45). Informed consent has been obtained from all participants. The authors declare no conflict of interest. 
+    
+    *Scientific Integrity and Openness*: The data and code necessary to reproduce the analyses presented here are publicly accessible, as are the materials necessary to attempt to replicate the findings. Analyses were pre-registered. For data, analyses materials, and preregistrations see: https://github.com/GregorKachel/symlit_rep_manuscript.
+    
+    *Acknowledgments*: We are thankful to Susanne Mauritz for her help in the organization of the study and to Valerie Jurgenson and Cynthia Pones for help with data collection. We would like to thank Anne Deiglmayr for hosting this project in her research group and for her continuous support. This research was supported by the Max Planck Society for the Advancement of Science. Gregor Kachel was supported by the German Research Foundation (Deutsche Forschungsgemeinschaft) under project number 429220405.
+
+abstract: |
+  Young children’s communicative skills in language and gesture are well documented, yet much less is known about their ability to interpret graphical symbols. Across three coordinated studies using identical procedures, we examined children’s spontaneous comprehension of unfamiliar graphic symbols in a simple object-choice task spanning a broad range of symbol–referent relationships. Each study included four conditions in which reference was established through direct representation, part–whole relations, analogies in size, number, and form, or gestalt principles such as orientation, alignment, and figure–ground organization. Participants were 304 German-speaking children continuously sampled from age 3 to 7 (Study 1, N = 106, 51 female; Study 2, N = 99, 49 female; Study 3, N = 99, 55 female). Children reliably used direct representations to identify target objects before age 3, whereas group-level success in less iconic conditions emerged later but consistently before school entry. Across conditions involving abstract analogical correspondences, results indicate converging developments in symbolic competence around age 4. Together, these studies trace children’s developing ability to understand graphical reference across a continuum from iconic to abstract and offer one of the most systematic investigations to date of how young children derive meaning from unfamiliar graphic symbols.
+  
+keywords          : "Graphic Communication, Pragmatics, Symbol-Referent-Relationships, Iconicity, Representation, Analogical Reasoning"
+
+wordcount         : "12.420"
+bibliography      : ["library.bib"]
+floatsintext      : yes
+linenumbers       : yes
+draft             : no
+mask              : no
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+output:
+  papaja::apa6_doc: default
+    
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+<!-- Packages, Setup, Read data for all studies, and prepare for analyses -->
+
+```{r setup, include = FALSE}
+library("papaja")
+r_refs("library.bib")
+
+# NOTE; how to push title, authornotes and abstract 
+# note: "\\clearpage"
+
+
+# Loading packages 
+# NOTE: this will install these packages in case they are missing
+
+# General
+if (!require(tidyverse)) install.packages('tidyverse'); library(tidyverse)
+if (!require(lsr)) install.packages('lsr'); library(lsr) # Analysis, Cohen's D
+if (!require(ggthemes)) install.packages('ggthemes'); library(ggthemes) # for tufte boxplots
+# if (!require(kableExtra)) install.packages('kableExtra'); library(kableExtra) 
+
+# plotting graphic
+if (!require(ggview)) install.packages('ggview'); library(ggview) # previewing
+library(patchwork)
+library(cowplot)
+library(magick)
+
+# Styling library(flextable)
+if (!require(flextable)) install.packages('flextable'); library(flextable) 
+
+# bayes packages
+if (!require(brms)) install.packages('brms'); library(brms) # 
+if (!require(tidybayes)) install.packages('tidybayes'); library(tidybayes) # 
+if (!require(HDInterval)) install.packages('HDInterval'); library(HDInterval) # 
+if (!require(posterior)) install.packages('posterior'); library(posterior) # 
+
+# basic analyses
+if (!require(scales)) install.packages('scales'); library(scales) # 
+
+# plotting
+## ggplot via tidyverse
+if (!require(cowplot)) install.packages('cowplot'); library(cowplot) # 
+if (!require(png)) install.packages('png'); library(png) # 
+if (!require(grid)) install.packages('grid'); library(grid) # 
+
+# Troubleshooting Knitting Document
+# might be required for knitting manuscript
+# install.packages('tinytex')
+# tinytex::install_tinytex()
+# 
+# tinytex::tlmgr_update()
+# tinytex::reinstall_tinytex()
+
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+
+
+```
+
+```{r rep_read_data, include = FALSE}
+
+# Full data set including all participants (i.e. including dropped participants)
+rep.data <- readRDS("../data/symlitrep_final_data.rds")
+
+# test  <- rep.data %>%
+#   #filter(valid != "drop") %>% # valid participants only 
+#   filter(trial != "fam") %>% 
+#   group_by(subid, agem) %>% 
+#   summarize(participants = n_distinct(subid),
+#             trials = n())
+
+# Study1 
+rep.S1.bayes.data  <- rep.data %>%
+  filter(valid != "drop") %>% # valid participants only 
+  filter(study == "study1") %>% # in study one
+  filter(trial != "fam") %>% 
+  select(condition, subid, sex, aged, agey, agem, correct, trial, rt, cue) %>%
+  mutate(condition = factor(condition, levels = c(
+        "Representation", # first level becomes reference
+        "Pars Pro Toto", 
+        "Simple Form Analogy", 
+        "Complex Form Analogy"))) %>%  
+  mutate(sex = factor(sex, levels = c(
+        "0", # first level becomes reference
+        "1"))) %>%  
+  mutate(z.trial = scale(as.numeric(trial)),
+         ageinyears = aged/365.25, 
+         z.age = ageinyears - mean(ageinyears),
+         z.sex = scale(as.numeric(sex))) %>% 
+  mutate(item = gsub("_A.png", "", cue)) %>% 
+  mutate(item = gsub("_B.png", "", item)) 
+
+# Study2
+rep.S2.bayes.data  <- rep.data %>%
+  filter(valid != "drop") %>% # valid participants only 
+  filter(study == "study2") %>% # in study two
+  filter(trial != "fam") %>% 
+  select(condition, subid, sex, aged, agey, agem, correct, trial, rt, cue) %>%
+  mutate(condition = factor(condition, levels = c(
+        "Absolute Position", # first level becomes reference
+        "Relative Position", 
+        "Orientation of Object", 
+        "Orientation of Feature"))) %>%  
+  mutate(sex = factor(sex, levels = c(
+        "0", # first level becomes reference
+        "1"))) %>%  
+  mutate(z.trial = scale(as.numeric(trial)),
+         ageinyears = aged/365.25, 
+         z.age = ageinyears - mean(ageinyears),
+         z.sex = scale(as.numeric(sex))) %>% 
+  mutate(item = gsub("_A.png", "", cue)) %>% 
+  mutate(item = gsub("_B.png", "", item)) 
+
+# Study 3 
+rep.S3.bayes.data  <- rep.data %>%
+  filter(valid != "drop") %>% # valid participants only 
+  filter(study == "study3") %>% # in study two
+  filter(trial != "fam") %>% 
+  select(condition, subid, sex, aged, agey, agem, correct, trial, rt, cue) %>%
+  mutate(condition = factor(condition, levels = c(
+        "Size of Object", # first level becomes reference
+        "Size of Feature", 
+        "Number of Object", 
+        "Number of Feature"))) %>%  
+  mutate(sex = factor(sex, levels = c(
+        "0", # first level becomes reference
+        "1"))) %>%  
+  mutate(z.trial = scale(as.numeric(trial)),
+         ageinyears = aged/365.25, 
+         z.age = ageinyears - mean(ageinyears),
+         z.sex = scale(as.numeric(sex))) %>% 
+  mutate(item = gsub("_A.png", "", cue)) %>% 
+  mutate(item = gsub("_B.png", "", item)) 
+
+# test <- rep.data %>%
+#   filter(valid != "drop") %>%
+#   group_by(study) %>%
+#   summarize(min_Age = min(agem))
+
+# test <- rep.data %>% 
+#   filter(valid != "drop") %>% 
+#   group_by(study, condition) %>% 
+#   summarize(N = length(subid))
+
+
+```
+
+```{r S1S2s3_colours, echo=FALSE, eval=T}
+#
+add_colour <- function(df) {
+  df %>%
+    mutate(colour = case_when(
+      condition == "Representation" ~ "#00441b",
+      condition == "Pars Pro Toto" ~ "#238b45",
+      condition == "Simple Form Analogy" ~ "#cc4c02",
+      condition == "Complex Form Analogy" ~ "#ff9609",
+      condition == "Absolute Position" ~ "#084081",
+      condition == "Relative Position" ~ "#2b8cbe",
+      condition == "Orientation of Object" ~ "#7B3F00",
+      condition == "Orientation of Feature" ~ "#B55239",
+      condition == "Size of Object" ~ "#2E004F", 
+      condition == "Size of Feature" ~ "#9370DB",
+      condition == "Number of Object" ~ "#67000d",
+      condition == "Number of Feature" ~ "#cb181d",
+      TRUE ~ NA_character_
+    ))
+}
+
+# condition_colours_df <- data.frame(
+#   condition = c(
+#     # study1
+#     "Representation", 
+#     "Pars Pro Toto", 
+#     "Simple Form Analogy", 
+#     "Complex Form Analogy",
+#     # study 2
+#     "Absolute Position", 
+#     "Relative Position", 
+#     "Orientation of Object", 
+#     "Orientation of Feature",
+#     # study3
+#     "Size of Object", 
+#     "Size of Feature",
+#     "Number of Object", 
+#     "Number of Feature"),
+#   colour = c(
+#     # study1
+#     "#006400", "#79e000", "#ff9609", "#ffc512",
+#     # study2
+#     "#4B0082", "#6A5ACD", "#8B0000", "#A0522D",
+#     # study3
+#     "#191970", "#008080", "#800080", "#8B008B"
+#   ),
+#   stringsAsFactors = F
+# )
+# 
+# # Function to add colour using left_join
+# add_colour <- function(df) {
+#   df %>% 
+#     left_join(condition_colours_df, by = "condition")
+# }
+
+# condition_colours <- c(
+#   "Representation" = "#006400",  # Dark Green
+#   "Pars Pro Toto" = "#79e000",    # Forest Green
+#   "Simple Form Analogy" = "#ff9609",  
+#   "Complex Form Analogy" = "#ffc512", 
+#   "Absolute Position" = "#4B0082",    # Indigo (dark purple)
+#   "Relative Position" = "#6A5ACD",    # Slate Blue
+#   "Orientation of Object" = "#8B0000", # Dark Red
+#   "Orientation of Feature" = "#A0522D", # Sienna (dark orange-brown)
+#   "Size of Object" = "#191970",        # Midnight Blue
+#   "Size of Feature" = "#008080",       # Teal
+#   "Number of Object" = "#800080",      # Purple
+#   "Number of Feature" = "#8B008B"       # Dark Magenta
+# )
+
+```
+
+<!-- Prepare Demographics -->
+
+```{r S1S2s3_participant_demographics, echo=F, eval=T}
+
+rep.age.table.data  <- rep.data %>% 
+  distinct(subid, .keep_all = TRUE) %>% # select only one line per participant
+  filter(valid != "drop") %>%  # filter out dropped participants
+  group_by(study) %>% 
+  summarize(
+    N = length(subid),
+    female = sum(sex=="0"),
+    Mean = mean(agem),
+    Min = min(agem),
+    Max = max(agem),
+    SD = round(sd(agem), 2),
+    N_daycare = length(subid[where == "daycare"]),
+    N_lab = length(subid[where == "lab"]),
+    N_home = length(subid[where == "home"]),
+    N_hort = length(subid[where == "afterschoolcenter"]))
+
+rep.age.table.data <- data.frame(rep.age.table.data, row.names = "study")
+
+rep.drop.table.data  <- rep.data %>%
+  distinct(subid, .keep_all = TRUE) %>% # select only one line per participant
+  filter(valid == "drop") %>%
+  group_by(study) %>%
+  summarize(
+    N = length(subid),
+    female = sum(sex=="0"),
+    Mean = mean(agem),
+    Min = min(agem),
+    Max = max(agem),
+    fail_in_fam = length(subid[drop == "fail_in_fam"]),
+    quit_early = length(subid[drop == "quit_early"]),
+    fussy_child = length(subid[drop == "fussy_child"]),
+    language = length(subid[drop == "language"]),
+    technical = length(subid[drop == "technical"]))
+
+rep.drop.table.data <- data.frame(rep.drop.table.data, row.names = "study")
+
+# Count trials by conditions
+rep.s1.trials <- rep.S1.bayes.data %>% 
+  group_by(condition) %>% 
+  summarize(
+    Trials = n(),                
+    N = n_distinct(subid))
+
+rep.s2.trials <- rep.S2.bayes.data %>% 
+  group_by(condition) %>% 
+  summarize(
+    Trials = n(),                
+    N = n_distinct(subid))
+
+rep.s3.trials <- rep.S3.bayes.data %>% 
+  group_by(condition) %>% 
+  summarize(
+    Trials = n(),                
+    N = n_distinct(subid))
+
+```
+
+```{r plot-participants-dots, echo = F, warning=F}
+
+age.plot.data <- rep.data %>% #select data
+  distinct(subid, .keep_all = TRUE) %>% # select only one line per participant
+  filter(valid != "drop")  %>%
+  mutate(sex = as.factor(sex))  %>%
+  mutate(sex = fct_recode(sex, "female" = "0","male"="1")) %>% 
+  rename(Sex = sex) %>% 
+  mutate(study = case_when(
+    study == "study1" ~ "Study 1",
+    study == "study2" ~ "Study 2",
+    study == "study3" ~ "Study 3",
+    TRUE ~ NA_character_))
+
+age.plot <- ggplot(age.plot.data, aes(x = agem, fill = Sex)) +
+  geom_dotplot(stackgroups = TRUE, binwidth = 1, binpositions = "all") +  
+  coord_fixed(ratio = 4, xlim = c(36, 84), ylim = c(0, 1.01)) +  # combine here
+  theme_bw() +
+  scale_x_continuous(name = "Age in Months", breaks = seq(36, 84, 12), minor_breaks = seq(36, 84, 1)) +
+  scale_y_continuous(name = "Participants", breaks = NULL) +
+  facet_wrap(~ study, ncol = 1) +
+  labs(fill = NULL) +
+  guides(fill = guide_legend(ncol =2, byrow = TRUE)) +  
+  theme_minimal() +
+  theme(
+    base_size = 13,
+    panel.grid.minor.x = element_line(linewidth = 0.25, linetype = 2),
+    panel.grid.major.x = element_line(linewidth = 1, linetype = 1),
+    panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 1),
+    strip.background = element_rect(colour = "grey30", size = 1),
+    strip.text = element_text(face = "bold", size = rel(.9), 
+                              margin = margin(t = 5, b = 8)),
+    axis.title = element_text(face = "bold", size = rel(.9)),
+    axis.text = element_text(size = rel(0.8)),
+    legend.position = c(1, -0.06),              
+    legend.justification = c(1, 1),
+    legend.text = element_text(size = rel(.9)),
+    panel.grid.minor = element_blank()
+  )
+
+ggsave(
+  filename = "../illustrations/plot_supp_participants_S123.png",
+  plot = age.plot,
+  device = "png",
+  width = 9.5, height = 6,
+  dpi = 300,
+  units = "in",
+  bg = "white")
+# 
+# # display plot
+# img <- image_read("../illustrations/plot_participants_S123.png")
+# 
+# windows(width = 15, height = 10)  # On Windows
+# plot(img)
+
+
+
+```
+
+```{r plot-exclusions-dots, echo = F, warning=F}
+
+drop.plot.data <- rep.data %>% #select data
+  distinct(subid, .keep_all = TRUE) %>% # select only one line per participant
+  filter(valid == "drop") %>% 
+  mutate(study = case_when(
+    study == "study1" ~ "Study 1",
+    study == "study2" ~ "Study 2",
+    study == "study3" ~ "Study 3",
+    TRUE ~ NA_character_)) %>% 
+  mutate(drop = case_when(
+    drop == "fail_in_fam" ~ "< 75% Correct in Familiarization",
+    drop == "fussy_child" ~ "Fussy Child", 
+    drop == "language" ~ "Low Language Proficiency", 
+    drop == "quit_early" ~ "Quit Early",
+    drop == "technical" ~ "Technical Problem",
+    TRUE ~ NA_character_)) %>%  
+  mutate(drop = factor(drop, levels = c(
+    "< 75% Correct in Familiarization",
+    "Quit Early",
+    "Fussy Child",
+    "Low Language Proficiency",
+    "Technical Problem")))
+
+drop.plot <- ggplot(drop.plot.data, aes(x = agem, fill = drop)) +
+  geom_dotplot(stackgroups = TRUE, binwidth = 1, binpositions = "all") +  
+  theme_bw() +
+  scale_x_continuous(name = "Age in Months", breaks = seq(36, 84, 12), minor_breaks = seq(36, 84, 1)) +
+  scale_y_continuous(name = "Exclusions", breaks = NULL) +
+  coord_fixed(ratio = 4, xlim = c(36, 84), ylim = c(0, 1.5)) + 
+  facet_wrap(~ study, ncol = 1) +
+  labs(fill = NULL) +
+  guides(fill = guide_legend(ncol = 5, byrow = TRUE)) +  
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.minor.x = element_line(linewidth = 0.25, linetype = 2),
+    panel.grid.major.x = element_line(linewidth = 1, linetype = 1),
+    panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 1),
+    strip.background = element_rect(colour = "grey30", size = 1),
+    strip.text = element_text(face = "bold", size = rel(.9), 
+                              margin = margin(t = 5, b = 8)),
+    axis.title = element_text(face = "bold", size = rel(.9)),
+    axis.text = element_text(size = rel(0.8)),
+    legend.position = "bottom",
+    legend.justification = c(1, 1),
+    legend.text = element_text(size = rel(.9)),
+    legend.margin = margin(t = 2),
+    plot.margin = margin(10, 10, 10, 10),
+    panel.grid.minor = element_blank()
+  )
+
+ggsave(
+  filename = "../illustrations/plot_supp_exclusions_S123.png",
+  plot = drop.plot,
+  device = "png",
+  width = 9.5, height = 6,
+  dpi = 300,
+  units = "in",
+  bg = "white")
+
+
+# # display plot
+# img <- image_read("../illustrations/plot_supp_exclusions_S123.png")
+# 
+# windows(width = 15, height = 10)  # On Windows
+# plot(img)
+
+```
+
+<!-- Run full and null models for all three studies (not evaluated to save time) -->
+
+```{r rep_s1_bayes, echo = FALSE, include=F, eval=F, results='asis'}
+
+# NOTE: this is section is not evaluated to save time during knitting
+
+# in prergistration we used the term "task" instead of "condition", same thing
+# we have now decided to not scale sex to make interpretation more straightforward
+# preregistered: correct ~ task*z.age +z.trial +z.sex +(z.trial|id)
+
+S1.full.bm<-brm(correct~condition*z.age+z.trial+sex+(z.trial|subid), 
+               data= rep.S1.bayes.data, 
+               family=bernoulli(),
+               chains = 4,
+               iter= 5000,
+               cores= 4)
+
+S1.full.bm <- add_criterion(S1.full.bm, c("loo", "waic"))
+
+S1.null.bm<-brm(correct~condition+z.age+z.trial+sex+(z.trial|subid), 
+               data= rep.S1.bayes.data, 
+               family=bernoulli(),
+               chains = 4,
+               iter= 5000,
+               cores= 4)
+
+S1.null.bm <- add_criterion(S1.null.bm, c("loo", "waic"))
+
+### MODEL COMPARISON
+S1.comp <- loo_compare(S1.null.bm, S1.full.bm, criterion = "waic")%>%as_tibble(rownames = "index")
+S1.comp <- data.frame(S1.comp, row.names = "index")
+
+S1.weights <- model_weights(S1.null.bm, S1.full.bm, criterion = "waic") 
+S1.weights <- S1.weights %>% as_tibble(rownames = "index")
+S1.weights <- data.frame(S1.weights, row.names = "index")
+
+# "significant" if elpd_diff > 2*se_diff (confer Sivula et al., 2020)
+
+### LOO COMPARISON
+### not reported, essentially identical
+# S1.null.loo <- loo(S1.null.bm)
+# S1.full.loo <- loo(S1.full.bm)
+# S1.loo.comp <- loo_compare(S1.null.loo, S1.full.loo) %>%
+#   as_tibble(rownames = "model")
+# S1.loo.comp
+
+# Saving the model (to not rerun it every time)
+saveRDS(S1.full.bm, "../models/S1.full.bm.rds")
+saveRDS(S1.null.bm, "../models/S1.null.bm.rds")
+saveRDS(S1.comp, "../models/S1.comp.rds")
+saveRDS(S1.weights, "../models/S1.weights.rds")
+
+```
+
+```{r rep_s2_bayes, echo = FALSE, include=F, eval=F, results='asis'}
+
+# NOTE: this is section is not evaluated to save time during knitting
+
+# in prergistration we used the term "task" instead of "condition", same thing
+# we have now decided to not scale sex to make interpretation more straightforward
+# preregistered: correct ~ task*z.age +z.trial +z.sex +(z.trial|id)
+
+S2.full.bm<-brm(correct~condition*z.age+z.trial+sex+(z.trial|subid), 
+                data= rep.S2.bayes.data, 
+                family=bernoulli(),
+                chains = 4,
+                iter= 5000,
+                cores= 4)
+
+S2.full.bm <- add_criterion(S2.full.bm, c("loo", "waic"))
+
+S2.null.bm<-brm(correct~condition+z.age+z.trial+sex+(z.trial|subid), 
+                data= rep.S2.bayes.data, 
+                family=bernoulli(),
+                chains = 4,
+                iter= 5000,
+                cores= 4)
+
+S2.null.bm <- add_criterion(S2.null.bm, c("loo", "waic"))
+
+### MODEL COMPARISON
+S2.comp <- loo_compare(S2.null.bm, S2.full.bm, criterion = "waic")%>%as_tibble(rownames = "index")
+S2.comp <- data.frame(S2.comp, row.names = "index")
+
+
+S2.weights <- model_weights(S2.null.bm, S2.full.bm, criterion = "waic") 
+S2.weights <- S2.weights %>% as_tibble(rownames = "index")
+S2.weights <- data.frame(S2.weights, row.names = "index")
+
+
+# "significant" if elpd_diff > 2*se_diff (confer Sivula et al., 2020)
+
+### LOO COMPARISON
+### not reported, essentially identical
+# S2.null.loo <- loo(S2.null.bm)
+# S2.full.loo <- loo(S2.full.bm)
+# S2.loo.comp <- loo_compare(S2.null.loo, S2.full.loo) %>%
+#   as_tibble(rownames = "model")
+# S2.loo.comp
+
+# Saving the model (to not rerun it every time)
+saveRDS(S2.full.bm, "../models/S2.full.bm.rds")
+saveRDS(S2.null.bm, "../models/S2.null.bm.rds")
+saveRDS(S2.comp, "../models/S2.comp.rds")
+saveRDS(S2.weights, "../models/S2.weights.rds")
+
+### item level model
+# S2.item.bm<-brm(correct~condition+z.age+z.trial+z.sex+(z.trial|subid)+ (z.age|item), 
+#                data= rep.S2.bayes.data, 
+#                family=bernoulli(),
+#                chains = 4,
+#                iter= 2000,
+#                cores= 4)
+
+```
+
+```{r rep_s3_bayes, echo = FALSE, include=F, eval=F, results='asis'}
+
+
+
+# NOTE: this is section is not evaluated to save time during knitting
+
+# in prergistration we used the term "task" instead of "condition", same thing
+# we have now decided to not scale sex to make interpretation more straightforward
+# preregistered: correct ~ task*z.age +z.trial +z.sex +(z.trial|id)
+
+S3.full.bm<-brm(correct~condition*z.age+z.trial+sex+(z.trial|subid), 
+                data= rep.S3.bayes.data, 
+                family=bernoulli(),
+                chains = 4,
+                iter= 5000,
+                cores= 4)
+
+S3.full.bm <- add_criterion(S3.full.bm, c("loo", "waic"))
+
+S3.null.bm<-brm(correct~condition+z.age+z.trial+sex+(z.trial|subid), 
+                data= rep.S3.bayes.data, 
+                family=bernoulli(),
+                chains = 4,
+                iter= 5000,
+                cores= 4)
+
+S3.null.bm <- add_criterion(S3.null.bm, c("loo", "waic"))
+
+### MODEL COMPARISON
+S3.comp <- loo_compare(S3.null.bm, S3.full.bm, criterion = "waic")%>%as_tibble(rownames = "index")
+S3.comp <- data.frame(S3.comp, row.names = "index")
+
+
+S3.weights <- model_weights(S3.null.bm, S3.full.bm, criterion = "waic") 
+S3.weights <- S3.weights %>% as_tibble(rownames = "index")
+S3.weights <- data.frame(S3.weights, row.names = "index")
+
+
+
+
+# "significant" if elpd_diff > 2*se_diff (confer Sivula et al., 2020)
+
+### LOO COMPARISON
+### not reported, essentially identical
+# S3.null.loo <- loo(S3.null.bm)
+# S3.full.loo <- loo(S3.full.bm)
+# S3.loo.comp <- loo_compare(S3.null.loo, S3.full.loo) %>%
+#   as_tibble(rownames = "model")
+# S3.loo.comp
+
+# Saving the model (to not rerun it every time)
+saveRDS(S3.full.bm, "../models/S3.full.bm.rds")
+saveRDS(S3.null.bm, "../models/S3.null.bm.rds")
+saveRDS(S3.comp, "../models/S3.comp.rds")
+saveRDS(S3.weights, "../models/S3.weights.rds")
+
+### item level model
+# S3.item.bm<-brm(correct~condition+z.age+z.trial+z.sex+(z.trial|subid)+ (z.age|item), 
+#                data= rep.S3.bayes.data, 
+#                family=bernoulli(),
+#                chains = 4,
+#                iter= 2000,
+#                cores= 4)
+
+
+
+
+```
+
+<!-- Diagnostics for all three studies -->
+
+```{r rep_s1_inspect, echo = FALSE, include=F, eval=T, results='asis'}
+
+S1.full.bm <- readRDS("../models/S1.full.bm.rds")
+S1.null.bm <- readRDS("../models/S1.null.bm.rds")
+
+S1.comp <- readRDS("../models/S1.comp.rds")
+S1.weights <- readRDS("../models/S1.weights.rds")
+
+### POSTERIOR PREDICTICE CHECKS
+### Check plots ...they look good, as expected in binomial models
+# pp_check(S1.full.bm)
+# pp_check(S1.null.bm)
+# pp_check(S1.full.bm, type = "bars")
+# pp_check(S1.null.bm, type = "bars")
+
+### EFFECTICE SAMPLE SIZES
+### inspect rhat --> always 1 --> good
+### inspect Bull_ESS --> always > 1000 --> good
+# summary(S1.full.bm)
+# summary(S1.null.bm)
+
+# for reporting BULK_ESS and Coefficients
+S1.full.coef <- summarise_draws(as_draws_df(S1.full.bm)) # ! standard is just 90% CrI
+
+# NOTE: # as_draws_df() from posterior uses 90% CrIs
+# we preregistered using 2.5% and 97.5% quantiles
+draws_df <- as_draws_df(S1.full.bm)
+quantiles_df <- as.data.frame(t(apply(draws_df, 2, quantile, probs = c(0.025, 0.975))))
+quantiles_df <- tibble::rownames_to_column(quantiles_df, var = "variable")
+names(quantiles_df)[2:3] <- c("q2.5", "q97.5")
+
+S1.full.coef <- left_join(S1.full.coef, quantiles_df, by = "variable") 
+
+# for table in appendix:
+S1.full.coef.table <- S1.full.coef
+
+# for reporting in text:
+S1.full.coef <- S1.full.coef %>% 
+  filter(grepl("^b_", variable)) %>% 
+  mutate(variable = gsub("b_", "", variable)) %>% 
+  mutate(variable = gsub("condition", "", variable)) %>% 
+  data.frame(row.names = "variable")
+
+S1.null.coef <- summarise_draws(as_draws_df(S1.null.bm)) %>%
+  filter(grepl("^b_", variable))
+# 
+# mean(S1.full.coef$ess_bulk)
+# min(S1.full.coef$ess_bulk)
+# max(S1.full.coef$ess_bulk)
+# 
+# mean(S1.null.coef$ess_bulk)
+# min(S1.null.coef$ess_bulk)
+# max(S1.null.coef$ess_bulk)
+
+
+```
+
+```{r rep_s2_inspect, echo = FALSE, include=F, eval=T, results='asis'}
+
+S2.full.bm <- readRDS("../models/S2.full.bm.rds")
+S2.null.bm <- readRDS("../models/S2.null.bm.rds")
+
+S2.comp <- readRDS("../models/S2.comp.rds")
+S2.weights <- readRDS("../models/S2.weights.rds")
+
+
+### POSTERIOR PREDICTICE CHECKS
+### Check plots ...they look good, as expected in binomial models
+# pp_check(S2.full.bm)
+# pp_check(S2.null.bm)
+# pp_check(S2.full.bm, type = "bars")
+# pp_check(S2.null.bm, type = "bars")
+
+### EFFECTICE SAMPLE SIZES
+### inspect rhat --> always 1 --> good
+### inspect Bull_ESS --> always > 1000 --> good
+# summary(S2.full.bm)
+# summary(S2.null.bm)
+
+# # for reporting BULK_ESS
+# S2.full.coef <- summarise_draws(as_draws_df(S2.full.bm)) %>%
+#   filter(grepl("^b_", variable)) %>% 
+#   mutate(variable = gsub("b_", "", variable)) %>% 
+#   mutate(variable = gsub("condition", "", variable)) %>% 
+#   data.frame(row.names = "variable")
+
+# for reporting BULK_ESS and Coefficients
+S2.full.coef <- summarise_draws(as_draws_df(S2.full.bm)) # ! standard is just 90% CrI
+
+# NOTE: # as_draws_df() from posterior uses 90% CrIs
+# we preregistered using 2.5% and 97.5% quantiles
+draws_df <- as_draws_df(S2.full.bm)
+quantiles_df <- as.data.frame(t(apply(draws_df, 2, quantile, probs = c(0.025, 0.975))))
+quantiles_df <- tibble::rownames_to_column(quantiles_df, var = "variable")
+names(quantiles_df)[2:3] <- c("q2.5", "q97.5")
+
+S2.full.coef <- left_join(S2.full.coef, quantiles_df, by = "variable") 
+
+# for table in appendix:
+S2.full.coef.table <- S2.full.coef
+
+# for reporting in text:
+S2.full.coef <- S2.full.coef %>% 
+  filter(grepl("^b_", variable)) %>% 
+  mutate(variable = gsub("b_", "", variable)) %>% 
+  mutate(variable = gsub("condition", "", variable)) %>% 
+  data.frame(row.names = "variable")
+
+# NULL MODEL
+S2.null.coef <- summarise_draws(as_draws_df(S2.null.bm)) %>%
+  filter(grepl("^b_", variable))
+
+# 
+# mean(S2.full.coef$ess_bulk)
+# min(S2.full.coef$ess_bulk)
+# max(S2.full.coef$ess_bulk)
+# 
+# mean(S2.null.coef$ess_bulk)
+# min(S2.null.coef$ess_bulk)
+# max(S2.null.coef$ess_bulk)
+
+
+```
+
+```{r rep_s3_inspect, echo = FALSE, include=F, eval=T, results='asis'}
+
+
+S3.full.bm <- readRDS("../models/S3.full.bm.rds")
+S3.null.bm <- readRDS("../models/S3.null.bm.rds")
+
+S3.comp <- readRDS("../models/S3.comp.rds") 
+S3.weights <- readRDS("../models/S3.weights.rds")
+
+
+## POSTERIOR PREDICTICE CHECKS
+## Check plots ...they look good, as expected in binomial models
+# pp_check(S3.full.bm)
+# pp_check(S3.null.bm)
+# pp_check(S3.full.bm, type = "bars")
+# pp_check(S3.null.bm, type = "bars")
+
+# ### EFFECTICE SAMPLE SIZES
+# ## inspect rhat --> always 1 --> good
+# ## inspect Bull_ESS --> always > 1000 --> good
+# summary(S3.full.bm)
+# summary(S3.null.bm)
+
+# # for reporting BULK_ESS
+# S3.full.coef <- summarise_draws(as_draws_df(S3.full.bm)) %>%
+#   filter(grepl("^b_", variable)) %>% 
+#   mutate(variable = gsub("b_", "", variable)) %>% 
+#   mutate(variable = gsub("condition", "", variable)) %>% 
+#   data.frame(row.names = "variable")
+
+# for reporting BULK_ESS and Coefficients
+S3.full.coef <- summarise_draws(as_draws_df(S3.full.bm)) # ! standard is just 90% CrI
+
+# NOTE: # as_draws_df() from posterior uses 90% CrIs
+# we preregistered using 2.5% and 97.5% quantiles
+draws_df <- as_draws_df(S3.full.bm)
+quantiles_df <- as.data.frame(t(apply(draws_df, 2, quantile, probs = c(0.025, 0.975))))
+quantiles_df <- tibble::rownames_to_column(quantiles_df, var = "variable")
+names(quantiles_df)[2:3] <- c("q2.5", "q97.5")
+
+S3.full.coef <- left_join(S3.full.coef, quantiles_df, by = "variable") 
+
+# for table in appendix:
+S3.full.coef.table <- S3.full.coef
+
+# for reporting in text:
+S3.full.coef <- S3.full.coef %>% 
+  filter(grepl("^b_", variable)) %>% 
+  mutate(variable = gsub("b_", "", variable)) %>% 
+  mutate(variable = gsub("condition", "", variable)) %>% 
+  data.frame(row.names = "variable")
+
+# NULL MODEL
+S3.null.coef <- summarise_draws(as_draws_df(S3.null.bm)) %>%
+  filter(grepl("^b_", variable))
+
+# mean(S3.full.coef$ess_bulk)
+# min(S3.full.coef$ess_bulk)
+# max(S3.full.coef$ess_bulk)
+# 
+# mean(S3.null.coef$ess_bulk)
+# min(S3.null.coef$ess_bulk)
+# max(S3.null.coef$ess_bulk)
+
+
+```
+
+<!-- Prepare Data for Plotting -->
+
+```{r rep_S1_bayes_fullmodel_prep_prepplotting, echo=FALSE, eval=T, warning = F, message=F}
+
+# load model from rds
+# S1.full.bm <- readRDS("../models/S1.full.bm.rds")
+# table(rep.S1.bayes.data$condition)
+
+nd1 <- tibble(z.age = rep(seq(from = min(rep.S1.bayes.data$z.age), to = max(rep.S1.bayes.data$z.age), length.out = 50),4),
+             condition = c(rep("Representation",50), 
+                           rep("Pars Pro Toto",50), 
+                           rep("Complex Form Analogy",50), 
+                           rep("Simple Form Analogy",50)), 
+             # the four conditions in the data
+             sex = rep(0,200),
+             z.trial = rep(0,200))
+
+# here we generate the fitted values based on the model
+# the function fitted() takes in the model and the new dataset and generates a fitted values (inclucing upper and lower 95% CrI) for every row in the dataset
+# because our dataset ranges from min age to max age in the data, we get the prediction for the age range in the data 
+# but we could also generate predictions for different ages of course
+f1 <- fitted(S1.full.bm, 
+             newdata = nd1, 
+             re_formula = NA) %>% 
+  # this tells the function to ignore the random effects - in theory, we could generate predictions for specific individuals
+  as_tibble() %>%
+  bind_cols(nd1)%>%
+  mutate(age = z.age + mean(rep.S1.bayes.data$ageinyears)) %>% # convert age back to the original scale by adding the mean of the data
+  mutate(condition = factor(condition, levels = c(
+        "Representation",
+        "Pars Pro Toto", 
+        "Simple Form Analogy", 
+        "Complex Form Analogy")))
+
+# summarize the data to include them in the plot later on
+d1 <- rep.S1.bayes.data%>%
+  group_by(subid, ageinyears, condition)%>%
+  summarise(mean = mean(correct)) %>% 
+  mutate(condition = factor(condition, levels = c(
+        "Representation", # first level becomes reference
+        "Pars Pro Toto", 
+        "Simple Form Analogy", 
+        "Complex Form Analogy")))
+
+p1 <- f1 %>%
+  mutate(age = age * 365.25) %>%
+   mutate(condition = factor(condition, levels = c(
+        "Representation", # first level becomes reference
+        "Pars Pro Toto", 
+        "Simple Form Analogy", 
+        "Complex Form Analogy"))) %>% 
+  group_by(condition)%>%
+  summarise(
+    Q2.5_closest_to.5 = Q2.5[which.min(abs(Q2.5-.5))],
+    estimate_closest_to.5 = Estimate[which.min(abs(Q2.5-.5))],
+    days = age[which.min(abs(Q2.5-.5))],
+    months = round(days/30.5),
+    years = round(days/365.25, 2),
+    monthlabels = as.character(paste(months, "months"))
+    )
+
+
+nd1 <- add_colour(nd1)
+f1  <- add_colour(f1)
+d1  <- add_colour(d1)
+p1  <- add_colour(p1)
+
+
+
+```
+
+```{r rep_S2_bayes_fullmodel_prep_prepplotting, echo=FALSE, eval=T, warning = F, message=F}
+
+# load model from rds
+S2.full.bm <- readRDS("../models/S2.full.bm.rds")
+# table(rep.S2.bayes.data$condition)
+
+nd2 <- tibble(z.age = rep(seq(from = min(rep.S2.bayes.data$z.age), to = max(rep.S2.bayes.data$z.age), length.out = 50),4),
+              condition = c(rep("Relative Position",50), 
+                            rep("Absolute Position",50), 
+                            rep("Orientation of Feature",50), 
+                            rep("Orientation of Object",50)),
+              sex = rep(0,200),
+              z.trial = rep(0,200))
+
+# here we generate the fitted values based on the model
+# the function fitted() takes in the model and the new dataset and generates a fitted values (inclucing upper and lower 95% CrI) for every row in the dataset
+# because our dataset ranges from min age to max age in the data, we get the prediction for the age range in the data 
+# but we could also generate predictions for different ages of course
+f2 <- fitted(S2.full.bm, 
+             newdata = nd2, 
+             re_formula = NA) %>% 
+  # this tells the function to ignore the random effects - in theory, we could generate predictions for specific individuals
+  as_tibble() %>%
+  bind_cols(nd2)%>%
+  mutate(age = z.age + mean(rep.S2.bayes.data$ageinyears)) %>% # convert age back to the original scale by adding the mean of the data
+  mutate(condition = factor(condition, levels = c(
+    "Absolute Position", # first level becomes reference
+    "Relative Position", 
+    "Orientation of Object", 
+    "Orientation of Feature")))
+
+# summarize the data to include them in the plot later on
+d2 <- rep.S2.bayes.data%>%
+  group_by(subid, ageinyears, condition)%>%
+  summarise(mean = mean(correct)) %>% 
+  mutate(condition = factor(condition, levels = c(
+    "Absolute Position", # first level becomes reference
+    "Relative Position", 
+    "Orientation of Object", 
+    "Orientation of Feature")))
+
+p2 <- f2 %>%
+  mutate(age = age * 365.25)%>%
+  mutate(condition = factor(condition, levels = c(
+    "Absolute Position", # first level becomes reference
+    "Relative Position", 
+    "Orientation of Object", 
+    "Orientation of Feature"))) %>% 
+  group_by(condition)%>%
+  summarise(
+    Q2.5_closest_to.5 = Q2.5[which.min(abs(Q2.5-.5))],
+    estimate_closest_to.5 = Estimate[which.min(abs(Q2.5-.5))],
+    days = age[which.min(abs(Q2.5-.5))],
+    months = round(days/30.5),
+    years = round(days/365.25, 2),
+    monthlabels = as.character(paste(months, "months"))
+  )
+
+nd2 <- add_colour(nd2)
+f2  <- add_colour(f2)
+d2  <- add_colour(d2)
+p2  <- add_colour(p2)
+
+```
+
+```{r rep_S3_bayes_fullmodel_prep_prepplotting, echo=FALSE, eval=T, warning = F, message=F}
+
+
+# load model from rds
+S3.full.bm <- readRDS("../models/S3.full.bm.rds")
+# table(rep.S3.bayes.data$condition)
+
+nd3 <- tibble(z.age = rep(seq(from = min(rep.S3.bayes.data$z.age), to = max(rep.S3.bayes.data$z.age), length.out = 50),4),
+              condition = c(rep("Number of Object",50), 
+                            rep("Number of Feature",50), 
+                            rep("Size of Object",50), 
+                            rep("Size of Feature",50)),
+              sex = rep(0,200),
+              z.trial = rep(0,200))
+
+# here we generate the fitted values based on the model
+# the function fitted() takes in the model and the new dataset and generates a fitted values (inclucing upper and lower 95% CrI) for every row in the dataset
+# because our dataset ranges from min age to max age in the data, we get the prediction for the age range in the data 
+# but we could also generate predictions for different ages of course
+f3 <- fitted(S3.full.bm, 
+             newdata = nd3, 
+             re_formula = NA) %>% 
+  # this tells the function to ignore the random effects - in theory, we could generate predictions for specific individuals
+  as_tibble() %>%
+  bind_cols(nd3)%>%
+  mutate(age = z.age + mean(rep.S3.bayes.data$ageinyears)) %>% # convert age back to the original scale by adding the mean of the data
+  mutate(condition = factor(condition, levels = c(
+    "Size of Object", # first level becomes reference
+    "Size of Feature", 
+    "Number of Object", 
+    "Number of Feature")))
+
+# summarize the data to include them in the plot later on
+d3 <- rep.S3.bayes.data%>%
+  group_by(subid, ageinyears, condition)%>%
+  summarise(mean = mean(correct)) %>% 
+  mutate(condition = factor(condition, levels = c(
+    "Size of Object", # first level becomes reference
+    "Size of Feature", 
+    "Number of Object", 
+    "Number of Feature")))
+
+p3 <- f3 %>%
+  mutate(age = age * 365.25)%>%
+  mutate(condition = factor(condition, levels = c(
+    "Size of Object", # first level becomes reference
+    "Size of Feature", 
+    "Number of Object", 
+    "Number of Feature"))) %>% 
+  group_by(condition)%>%
+  summarise(
+    Q2.5_closest_to.5 = Q2.5[which.min(abs(Q2.5-.5))],
+    estimate_closest_to.5 = Estimate[which.min(abs(Q2.5-.5))],
+    days = age[which.min(abs(Q2.5-.5))],
+    months = round(days/30.5),
+    years = round(days/365.25, 2),
+    monthlabels = as.character(paste(months, "months"))
+  )
+
+nd3 <- add_colour(nd3)
+f3  <- add_colour(f3)
+d3  <- add_colour(d3)
+p3  <- add_colour(p3)
+
+```
+
+<!-- Plotting with stimuli -->
+
+```{r rep_S1_plot_final, echo=FALSE, eval=F, warning = F, message=F}
+
+# plotexample Representation.png
+image_1 <- image_read(paste0("../illustrations/plotexample ", levels(d1$condition)[1], ".png")) 
+image_2 <- image_read(paste0("../illustrations/plotexample ", levels(d1$condition)[2], ".png"))
+image_3 <- image_read(paste0("../illustrations/plotexample ", levels(d1$condition)[3], ".png")) 
+image_4 <- image_read(paste0("../illustrations/plotexample ", levels(d1$condition)[4], ".png")) 
+
+image_1_grob <- rasterGrob(image_1, interpolate = TRUE)
+image_2_grob <- rasterGrob(image_2, interpolate = TRUE)
+image_3_grob <- rasterGrob(image_3, interpolate = TRUE)
+image_4_grob <- rasterGrob(image_4, interpolate = TRUE)
+
+# plot1 -----------------------------------------
+
+# 1. Label definieren
+label <- paste(levels(d1$condition)[1])
+
+# 2. Plot erstellen
+plot1 <- ggplot() +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey70", alpha = 0.75) +
+  
+  geom_point(
+    data = d1 %>% filter(condition == levels(condition)[1]),
+    aes(x = ageinyears, y = mean, colour = colour),
+    alpha = 0.5, shape = 1, size = 2
+  ) +
+  
+  geom_smooth(
+    data = f1 %>% filter(condition == levels(condition)[1]),
+    aes(x = age, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill = colour, colour = colour),
+    stat = "identity", alpha = 0.2, linewidth = 0.8
+  ) +
+  
+  geom_point(
+    data = p1 %>% filter(condition == levels(condition)[1]),
+    aes(x = days/365.25, y = 0.5, fill = colour, colour = colour),
+    size = 4, shape = 21, stroke = 1
+  ) +
+  
+  geom_point(
+    data = p1 %>% filter(condition == levels(condition)[1]),
+    aes(x = days/365.25, y = 0.5),
+    fill = "black", colour = "black", size = 0.5, shape = 21, stroke = 1
+  ) +
+  
+  geom_text(
+    data = p1 %>% filter(condition == levels(condition)[1]),
+    aes(label = months, x = days/365.25, y = 0.13),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  geom_text(
+    data = p1 %>% filter(condition == levels(condition)[1]),
+    aes(label = "months", x = days/365.25, y = .31),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  scale_colour_identity() +
+  scale_fill_identity() +
+  scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+  
+  labs(title = label, x = "Age", y = "Proportion Correct") + 
+  
+  coord_cartesian(ylim = c(0, 1), xlim = c(2.7, 7.3), clip = "off") +
+  
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.margin = margin(0, 0, 0, 0, "pt"),
+    axis.ticks.length = unit(0.0, "pt"),
+    panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 1), # Hinweis: size ist in neueren ggplot-Versionen 'linewidth'
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    axis.title = element_text(face = "bold", size = rel(0.8)),
+    axis.text = element_text(size = rel(0.8)),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    # axis.title.y = element_blank(),
+     axis.title.x = element_blank(),
+    
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 14) 
+    
+  ) +
+  annotation_custom(
+    grob = image_1_grob, 
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    xmin = 3, xmax = 7,  
+    ymin = 1.45)
+
+# plot2 ---------------
+
+# 1. Label definieren
+label <- paste(levels(d1$condition)[2])
+# 2. Plot erstellen
+plot2 <- ggplot() +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey70", alpha = 0.75) +
+  
+  geom_point(
+    data = d1 %>% filter(condition == levels(condition)[2]),
+    aes(x = ageinyears, y = mean, colour = colour),
+    alpha = 0.5, shape = 1, size = 2
+  ) +
+  
+  geom_smooth(
+    data = f1 %>% filter(condition == levels(condition)[2]),
+    aes(x = age, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill = colour, colour = colour),
+    stat = "identity", alpha = 0.2, linewidth = 0.8
+  ) +
+  
+  geom_point(
+    data = p1 %>% filter(condition == levels(condition)[2]),
+    aes(x = days/365.25, y = 0.5, fill = colour, colour = colour),
+    size = 4, shape = 21, stroke = 1
+  ) +
+  
+  geom_point(
+    data = p1 %>% filter(condition == levels(condition)[2]),
+    aes(x = days/365.25, y = 0.5),
+    fill = "black", colour = "black", size = 0.5, shape = 21, stroke = 1
+  ) +
+  
+  geom_text(
+    data = p1 %>% filter(condition == levels(condition)[2]),
+    aes(label = months, x = days/365.25, y = 0.13),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  geom_text(
+    data = p1 %>% filter(condition == levels(condition)[2]),
+    aes(label = "months", x = days/365.25, y = .31),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  scale_colour_identity() +
+  scale_fill_identity() +
+  scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+  
+  labs(title = label, x = "Age", y = "Proportion Correct") + 
+  
+  coord_cartesian(ylim = c(0, 1), xlim = c(2.7, 7.3), clip = "off") +
+  
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.margin = margin(0, 0, 0, 10, "pt"),
+    axis.ticks.length = unit(0.0, "pt"),
+    panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 1), # Hinweis: size ist in neueren ggplot-Versionen 'linewidth'
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    axis.title = element_text(face = "bold", size = rel(0.8)),
+    axis.text = element_text(size = rel(0.8)),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    # axis.title.y = element_blank(),
+     axis.title.x = element_blank(),
+    
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 14) 
+    
+  ) +
+  annotation_custom(
+    grob = image_2_grob, 
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    xmin = 3, xmax = 7,  
+    ymin = 1.45)
+
+# plot3 ----------------------
+
+# 1. Label definieren
+label <- paste(levels(d1$condition)[3])
+# 2. Plot erstellen
+plot3 <- ggplot() +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey70", alpha = 0.75) +
+  
+  geom_point(
+    data = d1 %>% filter(condition == levels(condition)[3]),
+    aes(x = ageinyears, y = mean, colour = colour),
+    alpha = 0.5, shape = 1, size = 2
+  ) +
+  
+  geom_smooth(
+    data = f1 %>% filter(condition == levels(condition)[3]),
+    aes(x = age, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill = colour, colour = colour),
+    stat = "identity", alpha = 0.2, linewidth = 0.8
+  ) +
+  
+  geom_point(
+    data = p1 %>% filter(condition == levels(condition)[3]),
+    aes(x = days/365.25, y = 0.5, fill = colour, colour = colour),
+    size = 4, shape = 21, stroke = 1
+  ) +
+  
+  geom_point(
+    data = p1 %>% filter(condition == levels(condition)[3]),
+    aes(x = days/365.25, y = 0.5),
+    fill = "black", colour = "black", size = 0.5, shape = 21, stroke = 1
+  ) +
+  
+  geom_text(
+    data = p1 %>% filter(condition == levels(condition)[3]),
+    aes(label = months, x = days/365.25, y = 0.13),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  geom_text(
+    data = p1 %>% filter(condition == levels(condition)[3]),
+    aes(label = "months", x = days/365.25, y = .31),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  scale_colour_identity() +
+  scale_fill_identity() +
+  scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+  
+  labs(title = label, x = "Age", y = "Proportion Correct") + 
+  
+  coord_cartesian(ylim = c(0, 1), xlim = c(2.7, 7.3), clip = "off") +
+  
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.margin = margin(0, 0, 0, 10, "pt"),
+    axis.ticks.length = unit(0.0, "pt"),
+    panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 1), # Hinweis: size ist in neueren ggplot-Versionen 'linewidth'
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    axis.title = element_text(face = "bold", size = rel(0.8)),
+    axis.text = element_text(size = rel(0.8)),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    # axis.title.y = element_blank(),
+     axis.title.x = element_blank(),
+    # HIER OPTIONAL: Styling für den Titel (z. B. fett und zentriert
+    plot.title = element_text(
+        face = "bold", 
+        hjust = 0.5, 
+        size = 14,
+        # t = top, r = right, b = bottom, l = left
+        margin = margin(t = 0, r = 0, b = 60, l = 0, unit = "pt") 
+      )
+    ) +
+  annotation_custom(
+    grob = image_3_grob, 
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    xmin = 3, xmax = 7,  
+    ymin = 1.45)
+
+# plot4 --------------------
+
+# 1. Label definieren
+label <- paste(levels(d1$condition)[4])
+
+# 2. Plot erstellen
+plot4 <- ggplot() +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey70", alpha = 0.75) +
+  
+  geom_point(
+    data = d1 %>% filter(condition == levels(condition)[4]),
+    aes(x = ageinyears, y = mean, colour = colour),
+    alpha = 0.5, shape = 1, size = 2
+  ) +
+  
+  geom_smooth(
+    data = f1 %>% filter(condition == levels(condition)[4]),
+    aes(x = age, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill = colour, colour = colour),
+    stat = "identity", alpha = 0.2, linewidth = 0.8
+  ) +
+  
+  geom_point(
+    data = p1 %>% filter(condition == levels(condition)[4]),
+    aes(x = days/365.25, y = 0.5, fill = colour, colour = colour),
+    size = 4, shape = 21, stroke = 1
+  ) +
+  
+  geom_point(
+    data = p1 %>% filter(condition == levels(condition)[4]),
+    aes(x = days/365.25, y = 0.5),
+    fill = "black", colour = "black", size = 0.5, shape = 21, stroke = 1
+  ) +
+  
+  geom_text(
+    data = p1 %>% filter(condition == levels(condition)[4]),
+    aes(label = months, x = days/365.25, y = 0.13),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  geom_text(
+    data = p1 %>% filter(condition == levels(condition)[4]),
+    aes(label = "months", x = days/365.25, y = .31),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  scale_colour_identity() +
+  scale_fill_identity() +
+  scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+  
+  labs(title = label, x = "Age", y = "Proportion Correct") + 
+  
+  coord_cartesian(ylim = c(0, 1), xlim = c(2.7, 7.3), clip = "off") +
+  
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.margin = margin(0, 0, 0, 10, "pt"),
+    axis.ticks.length = unit(0.0, "pt"),
+    panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 1), # Hinweis: size ist in neueren ggplot-Versionen 'linewidth'
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    axis.title = element_text(face = "bold", size = rel(0.8)),
+    axis.text = element_text(size = rel(0.8)),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    # axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 14) 
+    
+  ) +
+  annotation_custom(
+    grob = image_4_grob, 
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    xmin = 3, xmax = 7,  
+    ymin = 1.45)
+
+# combine -----------------
+library(patchwork)
+S1_complete <- plot1 | plot2 | plot3 | plot4 + 
+  plot_layout(guides = "collect", axes = "collect")
+
+
+
+S1_complete[[2]] <- S1_complete[[2]] + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), axis.title.y = element_blank())
+S1_complete[[3]] <- S1_complete[[3]] + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), axis.title.y = element_blank())
+S1_complete[[4]] <- S1_complete[[4]] + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), axis.title.y = element_blank())
+
+
+S1_complete <-S1_complete +
+plot_annotation(
+  caption = "Age in Years", # This acts as your global X label
+  theme = theme(
+    plot.caption = element_text(size = rel(0.9), face = "bold", hjust = 0.52, margin = margin(t = 0))))
+
+S1_complete + canvas(width=27, height= 10, units="cm", dpi = 600)
+
+
+# saving images ###############################
+
+ggsave(
+  filename = "../illustrations/S1_complete.pdf",
+  plot = S1_complete,
+  width = 27,
+  height = 10,
+  units = "cm",
+  dpi = 600)
+
+# shell.exec("../illustrations/S1_complete.pdf")
+
+ggsave(
+  filename = "./../illustrations/S1_complete.jpg",
+  plot = S1_complete,
+  width = 27,
+  height = 10,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S1_complete.png",
+  plot = S1_complete,
+  width = 27,
+  height = 10,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S1_complete.svg",
+  plot = S1_complete,
+  width = 27,
+  height = 10,
+  units = "cm",
+  dpi = 600)
+
+
+
+
+
+
+```
+
+```{r rep_S2_plot_final, echo=FALSE, eval=F, warning = F, message=F}
+
+
+# plotexample Representation.png
+image_1 <- image_read(paste0("../illustrations/plotexample ", levels(d2$condition)[1], ".png")) 
+image_2 <- image_read(paste0("../illustrations/plotexample ", levels(d2$condition)[2], ".png"))
+image_3 <- image_read(paste0("../illustrations/plotexample ", levels(d2$condition)[3], ".png")) 
+image_4 <- image_read(paste0("../illustrations/plotexample ", levels(d2$condition)[4], ".png")) 
+
+image_1_grob <- rasterGrob(image_1, interpolate = TRUE)
+image_2_grob <- rasterGrob(image_2, interpolate = TRUE)
+image_3_grob <- rasterGrob(image_3, interpolate = TRUE)
+image_4_grob <- rasterGrob(image_4, interpolate = TRUE)
+
+# plot1 -----------------------------------------
+
+# 1. Label definieren
+label <- paste(levels(d2$condition)[1])
+
+# 2. Plot erstellen
+plot1 <- ggplot() +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey70", alpha = 0.75) +
+  
+  geom_point(
+    data = d2 %>% filter(condition == levels(condition)[1]),
+    aes(x = ageinyears, y = mean, colour = colour),
+    alpha = 0.5, shape = 1, size = 2
+  ) +
+  
+  geom_smooth(
+    data = f2 %>% filter(condition == levels(condition)[1]),
+    aes(x = age, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill = colour, colour = colour),
+    stat = "identity", alpha = 0.2, linewidth = 0.8
+  ) +
+  
+  geom_point(
+    data = p2 %>% filter(condition == levels(condition)[1]),
+    aes(x = days/365.25, y = 0.5, fill = colour, colour = colour),
+    size = 4, shape = 21, stroke = 1
+  ) +
+  
+  geom_point(
+    data = p2 %>% filter(condition == levels(condition)[1]),
+    aes(x = days/365.25, y = 0.5),
+    fill = "black", colour = "black", size = 0.5, shape = 21, stroke = 1
+  ) +
+  
+  geom_text(
+    data = p2 %>% filter(condition == levels(condition)[1]),
+    aes(label = months, x = days/365.25, y = 0.13),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  geom_text(
+    data = p2 %>% filter(condition == levels(condition)[1]),
+    aes(label = "months", x = days/365.25, y = .31),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  scale_colour_identity() +
+  scale_fill_identity() +
+  scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+  
+  labs(title = label, x = "Age", y = "Proportion Correct") + 
+  
+  coord_cartesian(ylim = c(0, 1), xlim = c(2.7, 7.3), clip = "off") +
+  
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.margin = margin(0, 0, 0, 0, "pt"),
+    axis.ticks.length = unit(0.0, "pt"),
+    panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 1), # Hinweis: size ist in neueren ggplot-Versionen 'linewidth'
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    axis.title = element_text(face = "bold", size = rel(0.8)),
+    axis.text = element_text(size = rel(0.8)),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    # axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 14) 
+    
+  ) +
+  annotation_custom(
+    grob = image_1_grob, 
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    xmin = 3, xmax = 7,  
+    ymin = 1.45)
+
+# plot2 ---------------
+
+# 1. Label definieren
+label <- paste(levels(d2$condition)[2])
+# 2. Plot erstellen
+plot2 <- ggplot() +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey70", alpha = 0.75) +
+  
+  geom_point(
+    data = d2 %>% filter(condition == levels(condition)[2]),
+    aes(x = ageinyears, y = mean, colour = colour),
+    alpha = 0.5, shape = 1, size = 2
+  ) +
+  
+  geom_smooth(
+    data = f2 %>% filter(condition == levels(condition)[2]),
+    aes(x = age, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill = colour, colour = colour),
+    stat = "identity", alpha = 0.2, linewidth = 0.8
+  ) +
+  
+  geom_point(
+    data = p2 %>% filter(condition == levels(condition)[2]),
+    aes(x = days/365.25, y = 0.5, fill = colour, colour = colour),
+    size = 4, shape = 21, stroke = 1
+  ) +
+  
+  geom_point(
+    data = p2 %>% filter(condition == levels(condition)[2]),
+    aes(x = days/365.25, y = 0.5),
+    fill = "black", colour = "black", size = 0.5, shape = 21, stroke = 1
+  ) +
+  
+  geom_text(
+    data = p2 %>% filter(condition == levels(condition)[2]),
+    aes(label = months, x = days/365.25, y = 0.13),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  geom_text(
+    data = p2 %>% filter(condition == levels(condition)[2]),
+    aes(label = "months", x = days/365.25, y = .31),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  scale_colour_identity() +
+  scale_fill_identity() +
+  scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+  
+  labs(title = label, x = "Age", y = "Proportion Correct") + 
+  
+  coord_cartesian(ylim = c(0, 1), xlim = c(2.7, 7.3), clip = "off") +
+  
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.margin = margin(0, 0, 0, 10, "pt"),
+    axis.ticks.length = unit(0.0, "pt"),
+    panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 1), # Hinweis: size ist in neueren ggplot-Versionen 'linewidth'
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    axis.title = element_text(face = "bold", size = rel(0.8)),
+    axis.text = element_text(size = rel(0.8)),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    # axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 14) 
+    
+  ) +
+  annotation_custom(
+    grob = image_2_grob, 
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    xmin = 3, xmax = 7,  
+    ymin = 1.45)
+
+# plot3 ----------------------
+
+# 1. Label definieren
+label <- paste(levels(d2$condition)[3])
+# 2. Plot erstellen
+plot3 <- ggplot() +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey70", alpha = 0.75) +
+  
+  geom_point(
+    data = d2 %>% filter(condition == levels(condition)[3]),
+    aes(x = ageinyears, y = mean, colour = colour),
+    alpha = 0.5, shape = 1, size = 2
+  ) +
+  
+  geom_smooth(
+    data = f2 %>% filter(condition == levels(condition)[3]),
+    aes(x = age, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill = colour, colour = colour),
+    stat = "identity", alpha = 0.2, linewidth = 0.8
+  ) +
+  
+  geom_point(
+    data = p2 %>% filter(condition == levels(condition)[3]),
+    aes(x = days/365.25, y = 0.5, fill = colour, colour = colour),
+    size = 4, shape = 21, stroke = 1
+  ) +
+  
+  geom_point(
+    data = p2 %>% filter(condition == levels(condition)[3]),
+    aes(x = days/365.25, y = 0.5),
+    fill = "black", colour = "black", size = 0.5, shape = 21, stroke = 1
+  ) +
+  
+  geom_text(
+    data = p2 %>% filter(condition == levels(condition)[3]),
+    aes(label = months, x = days/365.25, y = 0.13),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  geom_text(
+    data = p2 %>% filter(condition == levels(condition)[3]),
+    aes(label = "months", x = days/365.25, y = .31),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  scale_colour_identity() +
+  scale_fill_identity() +
+  scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+  
+  labs(title = label, x = "Age", y = "Proportion Correct") + 
+  
+  coord_cartesian(ylim = c(0, 1), xlim = c(2.7, 7.3), clip = "off") +
+  
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.margin = margin(0, 0, 0, 10, "pt"),
+    axis.ticks.length = unit(0.0, "pt"),
+    panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 1), # Hinweis: size ist in neueren ggplot-Versionen 'linewidth'
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    axis.title = element_text(face = "bold", size = rel(0.8)),
+    axis.text = element_text(size = rel(0.8)),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    # axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    # HIER OPTIONAL: Styling für den Titel (z. B. fett und zentriert
+    plot.title = element_text(
+      face = "bold", 
+      hjust = 0.5, 
+      size = 14,
+      # t = top, r = right, b = bottom, l = left
+      margin = margin(t = 0, r = 0, b = 60, l = 0, unit = "pt") 
+    )
+  ) +
+  annotation_custom(
+    grob = image_3_grob, 
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    xmin = 3, xmax = 7,  
+    ymin = 1.45)
+
+# plot4 --------------------
+
+# 1. Label definieren
+label <- paste(levels(d2$condition)[4])
+
+# 2. Plot erstellen
+plot4 <- ggplot() +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey70", alpha = 0.75) +
+  
+  geom_point(
+    data = d2 %>% filter(condition == levels(condition)[4]),
+    aes(x = ageinyears, y = mean, colour = colour),
+    alpha = 0.5, shape = 1, size = 2
+  ) +
+  
+  geom_smooth(
+    data = f2 %>% filter(condition == levels(condition)[4]),
+    aes(x = age, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill = colour, colour = colour),
+    stat = "identity", alpha = 0.2, linewidth = 0.8
+  ) +
+  
+  geom_point(
+    data = p2 %>% filter(condition == levels(condition)[4]),
+    aes(x = days/365.25, y = 0.5, fill = colour, colour = colour),
+    size = 4, shape = 21, stroke = 1
+  ) +
+  
+  geom_point(
+    data = p2 %>% filter(condition == levels(condition)[4]),
+    aes(x = days/365.25, y = 0.5),
+    fill = "black", colour = "black", size = 0.5, shape = 21, stroke = 1
+  ) +
+  
+  geom_text(
+    data = p2 %>% filter(condition == levels(condition)[4]),
+    aes(label = months, x = days/365.25, y = 0.13),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  geom_text(
+    data = p2 %>% filter(condition == levels(condition)[4]),
+    aes(label = "months", x = days/365.25, y = .31),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  scale_colour_identity() +
+  scale_fill_identity() +
+  scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+  
+  labs(title = label, x = "Age", y = "Proportion Correct") + 
+  
+  coord_cartesian(ylim = c(0, 1), xlim = c(2.7, 7.3), clip = "off") +
+  
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.margin = margin(0, 0, 0, 10, "pt"),
+    axis.ticks.length = unit(0.0, "pt"),
+    panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 1), # Hinweis: size ist in neueren ggplot-Versionen 'linewidth'
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    axis.title = element_text(face = "bold", size = rel(0.8)),
+    axis.text = element_text(size = rel(0.8)),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    # axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 14) 
+    
+  ) +
+  annotation_custom(
+    grob = image_4_grob, 
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    xmin = 3, xmax = 7,  
+    ymin = 1.45)
+
+# combine -----------------
+library(patchwork)
+S2_complete <- plot1 | plot2 | plot3 | plot4 + 
+  plot_layout(guides = "collect", axes = "collect")
+
+
+
+S2_complete[[2]] <- S2_complete[[2]] + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), axis.title.y = element_blank())
+S2_complete[[3]] <- S2_complete[[3]] + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), axis.title.y = element_blank())
+S2_complete[[4]] <- S2_complete[[4]] + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), axis.title.y = element_blank())
+
+
+S2_complete <-S2_complete +
+  plot_annotation(
+    caption = "Age in Years", # This acts as your global X label
+    theme = theme(
+      plot.caption = element_text(size = rel(0.9), face = "bold", hjust = 0.52, margin = margin(t = 0))))
+
+S2_complete + canvas(width=27, height= 10, units="cm", dpi = 600)
+
+
+
+# saving images ###############################
+
+ggsave(
+  filename = "../illustrations/S2_complete.pdf",
+  plot = S2_complete,
+  width = 27,
+  height = 10,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S2_complete.jpg",
+  plot = S2_complete,
+  width = 27,
+  height = 10,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S2_complete.png",
+  plot = S2_complete,
+  width = 27,
+  height = 10,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S2_complete.svg",
+  plot = S2_complete,
+  width = 27,
+  height = 10,
+  units = "cm",
+  dpi = 600)
+
+
+
+
+
+
+
+```
+
+```{r rep_S3_plot_final, echo=FALSE, eval=F, warning = F, message=F}
+
+
+# plotexample Representation.png
+image_1 <- image_read(paste0("../illustrations/plotexample ", levels(d3$condition)[1], ".png")) 
+image_2 <- image_read(paste0("../illustrations/plotexample ", levels(d3$condition)[2], ".png"))
+image_3 <- image_read(paste0("../illustrations/plotexample ", levels(d3$condition)[3], ".png")) 
+image_4 <- image_read(paste0("../illustrations/plotexample ", levels(d3$condition)[4], ".png")) 
+
+image_1_grob <- rasterGrob(image_1, interpolate = TRUE)
+image_2_grob <- rasterGrob(image_2, interpolate = TRUE)
+image_3_grob <- rasterGrob(image_3, interpolate = TRUE)
+image_4_grob <- rasterGrob(image_4, interpolate = TRUE)
+
+# plot1 -----------------------------------------
+
+# 1. Label definieren
+label <- paste(levels(d3$condition)[1])
+
+# 2. Plot erstellen
+plot1 <- ggplot() +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey70", alpha = 0.75) +
+  
+  geom_point(
+    data = d3 %>% filter(condition == levels(condition)[1]),
+    aes(x = ageinyears, y = mean, colour = colour),
+    alpha = 0.5, shape = 1, size = 2
+  ) +
+  
+  geom_smooth(
+    data = f3 %>% filter(condition == levels(condition)[1]),
+    aes(x = age, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill = colour, colour = colour),
+    stat = "identity", alpha = 0.2, linewidth = 0.8
+  ) +
+  
+  geom_point(
+    data = p3 %>% filter(condition == levels(condition)[1]),
+    aes(x = days/365.25, y = 0.5, fill = colour, colour = colour),
+    size = 4, shape = 21, stroke = 1
+  ) +
+  
+  geom_point(
+    data = p3 %>% filter(condition == levels(condition)[1]),
+    aes(x = days/365.25, y = 0.5),
+    fill = "black", colour = "black", size = 0.5, shape = 21, stroke = 1
+  ) +
+  
+  geom_text(
+    data = p3 %>% filter(condition == levels(condition)[1]),
+    aes(label = months, x = days/365.25, y = 0.13),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  geom_text(
+    data = p3 %>% filter(condition == levels(condition)[1]),
+    aes(label = "months", x = days/365.25, y = .31),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  scale_colour_identity() +
+  scale_fill_identity() +
+  scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+  
+  labs(title = label, x = "Age", y = "Proportion Correct") + 
+  
+  coord_cartesian(ylim = c(0, 1), xlim = c(2.7, 7.3), clip = "off") +
+  
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.margin = margin(0, 0, 0, 0, "pt"),
+    axis.ticks.length = unit(0.0, "pt"),
+    panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 1), # Hinweis: size ist in neueren ggplot-Versionen 'linewidth'
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    axis.title = element_text(face = "bold", size = rel(0.8)),
+    axis.text = element_text(size = rel(0.8)),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    # axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 14) 
+    
+  ) +
+  annotation_custom(
+    grob = image_1_grob, 
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    xmin = 3, xmax = 7,  
+    ymin = 1.45)
+
+# plot2 ---------------
+
+# 1. Label definieren
+label <- paste(levels(d3$condition)[2])
+# 2. Plot erstellen
+plot2 <- ggplot() +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey70", alpha = 0.75) +
+  
+  geom_point(
+    data = d3 %>% filter(condition == levels(condition)[2]),
+    aes(x = ageinyears, y = mean, colour = colour),
+    alpha = 0.5, shape = 1, size = 2
+  ) +
+  
+  geom_smooth(
+    data = f3 %>% filter(condition == levels(condition)[2]),
+    aes(x = age, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill = colour, colour = colour),
+    stat = "identity", alpha = 0.2, linewidth = 0.8
+  ) +
+  
+  geom_point(
+    data = p3 %>% filter(condition == levels(condition)[2]),
+    aes(x = days/365.25, y = 0.5, fill = colour, colour = colour),
+    size = 4, shape = 21, stroke = 1
+  ) +
+  
+  geom_point(
+    data = p3 %>% filter(condition == levels(condition)[2]),
+    aes(x = days/365.25, y = 0.5),
+    fill = "black", colour = "black", size = 0.5, shape = 21, stroke = 1
+  ) +
+  
+  geom_text(
+    data = p3 %>% filter(condition == levels(condition)[2]),
+    aes(label = months, x = days/365.25, y = 0.13),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  geom_text(
+    data = p3 %>% filter(condition == levels(condition)[2]),
+    aes(label = "months", x = days/365.25, y = .31),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  scale_colour_identity() +
+  scale_fill_identity() +
+  scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+  
+  labs(title = label, x = "Age", y = "Proportion Correct") + 
+  
+  coord_cartesian(ylim = c(0, 1), xlim = c(2.7, 7.3), clip = "off") +
+  
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.margin = margin(0, 0, 0, 10, "pt"),
+    axis.ticks.length = unit(0.0, "pt"),
+    panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 1), # Hinweis: size ist in neueren ggplot-Versionen 'linewidth'
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    axis.title = element_text(face = "bold", size = rel(0.8)),
+    axis.text = element_text(size = rel(0.8)),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    # axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 14) 
+    
+  ) +
+  annotation_custom(
+    grob = image_2_grob, 
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    xmin = 3, xmax = 7,  
+    ymin = 1.45)
+
+# plot3 ----------------------
+
+# 1. Label definieren
+label <- paste(levels(d3$condition)[3])
+# 2. Plot erstellen
+plot3 <- ggplot() +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey70", alpha = 0.75) +
+  
+  geom_point(
+    data = d3 %>% filter(condition == levels(condition)[3]),
+    aes(x = ageinyears, y = mean, colour = colour),
+    alpha = 0.5, shape = 1, size = 2
+  ) +
+  
+  geom_smooth(
+    data = f3 %>% filter(condition == levels(condition)[3]),
+    aes(x = age, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill = colour, colour = colour),
+    stat = "identity", alpha = 0.2, linewidth = 0.8
+  ) +
+  
+  geom_point(
+    data = p3 %>% filter(condition == levels(condition)[3]),
+    aes(x = days/365.25, y = 0.5, fill = colour, colour = colour),
+    size = 4, shape = 21, stroke = 1
+  ) +
+  
+  geom_point(
+    data = p3 %>% filter(condition == levels(condition)[3]),
+    aes(x = days/365.25, y = 0.5),
+    fill = "black", colour = "black", size = 0.5, shape = 21, stroke = 1
+  ) +
+  
+  geom_text(
+    data = p3 %>% filter(condition == levels(condition)[3]),
+    aes(label = months, x = days/365.25, y = 0.13),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  geom_text(
+    data = p3 %>% filter(condition == levels(condition)[3]),
+    aes(label = "months", x = days/365.25, y = .31),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  scale_colour_identity() +
+  scale_fill_identity() +
+  scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+  
+  labs(title = label, x = "Age", y = "Proportion Correct") + 
+  
+  coord_cartesian(ylim = c(0, 1), xlim = c(2.7, 7.3), clip = "off") +
+  
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.margin = margin(0, 0, 0, 10, "pt"),
+    axis.ticks.length = unit(0.0, "pt"),
+    panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 1), # Hinweis: size ist in neueren ggplot-Versionen 'linewidth'
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    axis.title = element_text(face = "bold", size = rel(0.8)),
+    axis.text = element_text(size = rel(0.8)),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    # axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    # HIER OPTIONAL: Styling für den Titel (z. B. fett und zentriert
+    plot.title = element_text(
+      face = "bold", 
+      hjust = 0.5, 
+      size = 14,
+      # t = top, r = right, b = bottom, l = left
+      margin = margin(t = 0, r = 0, b = 60, l = 0, unit = "pt") 
+    )
+  ) +
+  annotation_custom(
+    grob = image_3_grob, 
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    xmin = 3, xmax = 7,  
+    ymin = 1.45)
+
+# plot4 --------------------
+
+# 1. Label definieren
+label <- paste(levels(d3$condition)[4])
+
+# 2. Plot erstellen
+plot4 <- ggplot() +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey70", alpha = 0.75) +
+  
+  geom_point(
+    data = d3 %>% filter(condition == levels(condition)[4]),
+    aes(x = ageinyears, y = mean, colour = colour),
+    alpha = 0.5, shape = 1, size = 2
+  ) +
+  
+  geom_smooth(
+    data = f3 %>% filter(condition == levels(condition)[4]),
+    aes(x = age, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill = colour, colour = colour),
+    stat = "identity", alpha = 0.2, linewidth = 0.8
+  ) +
+  
+  geom_point(
+    data = p3 %>% filter(condition == levels(condition)[4]),
+    aes(x = days/365.25, y = 0.5, fill = colour, colour = colour),
+    size = 4, shape = 21, stroke = 1
+  ) +
+  
+  geom_point(
+    data = p3 %>% filter(condition == levels(condition)[4]),
+    aes(x = days/365.25, y = 0.5),
+    fill = "black", colour = "black", size = 0.5, shape = 21, stroke = 1
+  ) +
+  
+  geom_text(
+    data = p3 %>% filter(condition == levels(condition)[4]),
+    aes(label = months, x = days/365.25, y = 0.13),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  geom_text(
+    data = p3 %>% filter(condition == levels(condition)[4]),
+    aes(label = "months", x = days/365.25, y = .31),
+    color = "black", fontface = "bold",
+    angle = 90, size = 4, vjust = 0.5
+  ) +
+  
+  scale_colour_identity() +
+  scale_fill_identity() +
+  scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+  
+  labs(title = label, x = "Age", y = "Proportion Correct") + 
+  
+  coord_cartesian(ylim = c(0, 1), xlim = c(2.7, 7.3), clip = "off") +
+  
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.margin = margin(0, 0, 0, 10, "pt"),
+    axis.ticks.length = unit(0.0, "pt"),
+    panel.border = element_rect(colour = "grey30", fill = NA, linewidth = 1), # Hinweis: size ist in neueren ggplot-Versionen 'linewidth'
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    axis.title = element_text(face = "bold", size = rel(0.8)),
+    axis.text = element_text(size = rel(0.8)),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    # axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 14) 
+    
+  ) +
+  annotation_custom(
+    grob = image_4_grob, 
+    # Positionierung im Koordinatensystem des Hauptplots (x, y)
+    xmin = 3, xmax = 7,  
+    ymin = 1.45)
+
+# combine -----------------
+library(patchwork)
+S3_complete <- plot1 | plot2 | plot3 | plot4 + 
+  plot_layout(guides = "collect", axes = "collect")
+
+S3_complete[[2]] <- S3_complete[[2]] + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), axis.title.y = element_blank())
+S3_complete[[3]] <- S3_complete[[3]] + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), axis.title.y = element_blank())
+S3_complete[[4]] <- S3_complete[[4]] + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), axis.title.y = element_blank())
+
+
+S3_complete <- S3_complete +
+  plot_annotation(
+    caption = "Age in Years", # This acts as your global X label
+    theme = theme(
+      plot.caption = element_text(size = rel(0.9), face = "bold", hjust = 0.52, margin = margin(t = 0))))
+
+S3_complete + canvas(width=27, height= 10, units="cm", dpi = 600)
+
+
+ggsave(
+  filename = "../illustrations/S3_complete.pdf",
+  plot = S3_complete,
+  width = 27,
+  height = 10,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S3_complete.jpg",
+  plot = S3_complete,
+  width = 27,
+  height = 10,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S3_complete.png",
+  plot = S3_complete,
+  width = 27,
+  height = 10,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S3_complete.svg",
+  plot = S3_complete,
+  width = 27,
+  height = 10,
+  units = "cm",
+  dpi = 600)
+
+
+
+
+```
+
+```{r rep_S1_stimuli_final, echo=FALSE, eval=F, warning = F, message=F}
+
+
+image_1 <- image_read(paste0("../illustrations/plotexample ", levels(d1$condition)[1], ".png")) %>%
+  image_ggplot() +
+  labs(
+    title = paste(levels(d1$condition)[1]),
+    tag = "A"                                    # 1. Define your label as a tag
+  ) +
+  theme(
+    # 2. Add extra left padding (45pt) so the tag doesn't touch the image
+    plot.margin = margin(10, 10, 10, 10, "pt"),
+
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")),
+
+    # 3. Position the tag relative to the entire plot window
+    plot.tag.position = c(-0.08, 0.35),            # c(X, Y) -> 2% from left, 50% up (perfectly centered)
+    plot.tag = element_text(face = "bold", size = 14, color = "black"))
+ 
+
+image_2 <- image_read(paste0("../illustrations/plotexample ", levels(d1$condition)[2], ".png")) %>%
+  image_ggplot() + 
+  labs(title = paste(levels(d1$condition)[2])) +  
+  theme(
+    plot.margin = margin(10, 10, 10, 10, "pt"),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")))
+  
+image_3 <- image_read(paste0("../illustrations/plotexample ", levels(d1$condition)[3], ".png")) %>%
+  image_ggplot() + 
+  labs(title = paste(levels(d1$condition)[3])) +  
+  theme(
+    plot.margin = margin(10, 10, 10, 10, "pt"),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")))
+
+image_4 <- image_read(paste0("../illustrations/plotexample ", levels(d1$condition)[4], ".png")) %>%
+  image_ggplot() + 
+  labs(title = paste(levels(d1$condition)[4])) +  
+  theme(
+    plot.margin = margin(10, 10, 10, 10, "pt"),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")))
+ 
+
+# stimuli Representation.png
+image_1_1 <- image_read(paste0("../illustrations/stimuli ", levels(d1$condition)[1], ".png")) %>%
+  image_ggplot() +
+  labs(tag = "B") +
+  theme(
+    # 2. Add extra left padding (45pt) so the tag doesn't touch the image
+    plot.margin = margin(0, 0, 0, 0, "pt"),
+        plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")),
+    
+    # 3. Position the tag relative to the entire plot window
+    plot.tag.position = c(-0.08, 0.5),            # c(X, Y) -> 2% from left, 50% up (perfectly centered)
+    plot.tag = element_text(face = "bold", size = 14, color = "black"))
+
+
+image_2_2 <- image_read(paste0("../illustrations/stimuli ", levels(d1$condition)[2], ".png")) %>%
+  image_ggplot()
+image_3_3 <- image_read(paste0("../illustrations/stimuli ", levels(d1$condition)[3], ".png")) %>%
+  image_ggplot()
+image_4_4 <- image_read(paste0("../illustrations/stimuli ", levels(d1$condition)[4], ".png")) %>%
+  image_ggplot()
+
+S1_Stimuli <- 
+  image_1 / image_1_1 | 
+  image_2 / image_2_2 | 
+  image_3 / image_3_3 | 
+  image_4 / image_4_4 
+  
+  
+S1_Stimuli + canvas(width=27, height= 9.4, units="cm", dpi = 600)
+
+
+# saving images ###############################
+
+ggsave(
+  filename = "../illustrations/S1_Stimuli.pdf",
+  plot = S1_Stimuli,
+  width = 27,
+  height = 9.4,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S1_Stimuli.jpg",
+  plot = S1_Stimuli,
+  width = 27,
+  height = 9.4,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S1_Stimuli.png",
+  plot = S1_Stimuli,
+  width = 27,
+  height = 9.4,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S1_Stimuli.svg",
+  plot = S1_Stimuli,
+  width = 27,
+  height = 9.4,
+  units = "cm",
+  dpi = 600)
+
+
+
+
+
+```
+
+```{r rep_S2_stimuli_final, echo=FALSE, eval=F, warning = F, message=F}
+
+
+
+image_1 <- image_read(paste0("../illustrations/plotexample ", levels(d2$condition)[1], ".png")) %>%
+  image_ggplot() +
+  labs(
+    title = paste(levels(d2$condition)[1]),
+    tag = "A"                                    # 1. Define your label as a tag
+  ) +
+  theme(
+    # 2. Add extra left padding (45pt) so the tag doesn't touch the image
+    plot.margin = margin(10, 10, 10, 10, "pt"),
+    
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")),
+    
+    # 3. Position the tag relative to the entire plot window
+    plot.tag.position = c(-0.08, 0.35),            # c(X, Y) -> 2% from left, 50% up (perfectly centered)
+    plot.tag = element_text(face = "bold", size = 14, color = "black"))
+
+
+image_2 <- image_read(paste0("../illustrations/plotexample ", levels(d2$condition)[2], ".png")) %>%
+  image_ggplot() + 
+  labs(title = paste(levels(d2$condition)[2])) +  
+  theme(
+    plot.margin = margin(10, 10, 10, 10, "pt"),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")))
+
+image_3 <- image_read(paste0("../illustrations/plotexample ", levels(d2$condition)[3], ".png")) %>%
+  image_ggplot() + 
+  labs(title = paste(levels(d2$condition)[3])) +  
+  theme(
+    plot.margin = margin(10, 10, 10, 10, "pt"),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")))
+
+image_4 <- image_read(paste0("../illustrations/plotexample ", levels(d2$condition)[4], ".png")) %>%
+  image_ggplot() + 
+  labs(title = paste(levels(d2$condition)[4])) +  
+  theme(
+    plot.margin = margin(10, 10, 10, 10, "pt"),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")))
+
+
+# stimuli Representation.png
+image_1_1 <- image_read(paste0("../illustrations/stimuli ", levels(d2$condition)[1], ".png")) %>%
+  image_ggplot() +
+  labs(tag = "B") +
+  theme(
+    # 2. Add extra left padding (45pt) so the tag doesn't touch the image
+    plot.margin = margin(0, 0, 0, 0, "pt"),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")),
+    
+    # 3. Position the tag relative to the entire plot window
+    plot.tag.position = c(-0.08, 0.5),            # c(X, Y) -> 2% from left, 50% up (perfectly centered)
+    plot.tag = element_text(face = "bold", size = 14, color = "black"))
+
+
+image_2_2 <- image_read(paste0("../illustrations/stimuli ", levels(d2$condition)[2], ".png")) %>%
+  image_ggplot()
+image_3_3 <- image_read(paste0("../illustrations/stimuli ", levels(d2$condition)[3], ".png")) %>%
+  image_ggplot()
+image_4_4 <- image_read(paste0("../illustrations/stimuli ", levels(d2$condition)[4], ".png")) %>%
+  image_ggplot()
+
+S2_Stimuli <- 
+  image_1 / image_1_1 | 
+  image_2 / image_2_2 | 
+  image_3 / image_3_3 | 
+  image_4 / image_4_4 
+
+
+S2_Stimuli + canvas(width=27, height= 9.4, units="cm", dpi = 600)
+
+
+# saving images ###############################
+
+ggsave(
+  filename = "../illustrations/S2_Stimuli.pdf",
+  plot = S2_Stimuli,
+  width = 27,
+  height = 9.4,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S2_Stimuli.jpg",
+  plot = S2_Stimuli,
+  width = 27,
+  height = 9.4,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S2_Stimuli.png",
+  plot = S2_Stimuli,
+  width = 27,
+  height = 9.4,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S2_Stimuli.svg",
+  plot = S2_Stimuli,
+  width = 27,
+  height = 9.4,
+  units = "cm",
+  dpi = 600)
+
+
+
+
+
+```
+
+```{r rep_S3_stimuli_final, echo=FALSE, eval=F, warning = F, message=F}
+
+
+image_1 <- image_read(paste0("../illustrations/plotexample ", levels(d3$condition)[1], ".png")) %>%
+  image_ggplot() +
+  labs(
+    title = paste(levels(d3$condition)[1]),
+    tag = "A"                                    # 1. Define your label as a tag
+  ) +
+  theme(
+    # 2. Add extra left padding (45pt) so the tag doesn't touch the image
+    plot.margin = margin(10, 10, 10, 10, "pt"),
+    
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")),
+    
+    # 3. Position the tag relative to the entire plot window
+    plot.tag.position = c(-0.08, 0.35),            # c(X, Y) -> 2% from left, 50% up (perfectly centered)
+    plot.tag = element_text(face = "bold", size = 14, color = "black"))
+
+
+image_2 <- image_read(paste0("../illustrations/plotexample ", levels(d3$condition)[2], ".png")) %>%
+  image_ggplot() + 
+  labs(title = paste(levels(d3$condition)[2])) +  
+  theme(
+    plot.margin = margin(10, 10, 10, 10, "pt"),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")))
+
+image_3 <- image_read(paste0("../illustrations/plotexample ", levels(d3$condition)[3], ".png")) %>%
+  image_ggplot() + 
+  labs(title = paste(levels(d3$condition)[3])) +  
+  theme(
+    plot.margin = margin(10, 10, 10, 10, "pt"),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")))
+
+image_4 <- image_read(paste0("../illustrations/plotexample ", levels(d3$condition)[4], ".png")) %>%
+  image_ggplot() + 
+  labs(title = paste(levels(d3$condition)[4])) +  
+  theme(
+    plot.margin = margin(10, 10, 10, 10, "pt"),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")))
+
+
+# stimuli Representation.png
+image_1_1 <- image_read(paste0("../illustrations/stimuli ", levels(d3$condition)[1], ".png")) %>%
+  image_ggplot() +
+  labs(tag = "B") +
+  theme(
+    # 2. Add extra left padding (45pt) so the tag doesn't touch the image
+    plot.margin = margin(0, 0, 0, 0, "pt"),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16,
+                              margin = margin(t = 0, r = 0, b = 10, l = 0, unit = "pt")),
+    
+    # 3. Position the tag relative to the entire plot window
+    plot.tag.position = c(-0.08, 0.5),            # c(X, Y) -> 2% from left, 50% up (perfectly centered)
+    plot.tag = element_text(face = "bold", size = 14, color = "black"))
+
+
+image_2_2 <- image_read(paste0("../illustrations/stimuli ", levels(d3$condition)[2], ".png")) %>%
+  image_ggplot()
+image_3_3 <- image_read(paste0("../illustrations/stimuli ", levels(d3$condition)[3], ".png")) %>%
+  image_ggplot()
+image_4_4 <- image_read(paste0("../illustrations/stimuli ", levels(d3$condition)[4], ".png")) %>%
+  image_ggplot()
+
+S3_Stimuli <- 
+  image_1 / image_1_1 | 
+  image_2 / image_2_2 | 
+  image_3 / image_3_3 | 
+  image_4 / image_4_4 
+
+S3_Stimuli + canvas(width=27, height= 9.4, units="cm", dpi = 600)
+
+
+
+
+# saving images ###############################
+
+ggsave(
+  filename = "../illustrations/S3_Stimuli.pdf",
+  plot = S3_Stimuli,
+  width = 27,
+  height = 9.4,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S3_Stimuli.jpg",
+  plot = S3_Stimuli,
+  width = 27,
+  height = 9.4,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S3_Stimuli.png",
+  plot = S3_Stimuli,
+  width = 27,
+  height = 9.4,
+  units = "cm",
+  dpi = 600)
+
+ggsave(
+  filename = "./../illustrations/S3_Stimuli.svg",
+  plot = S3_Stimuli,
+  width = 27,
+  height = 9.4,
+  units = "cm",
+  dpi = 600)
+
+
+
+
+
+
+
+```
+
+<!-- Run additional item models for all three studies (not evaluated to save time) -->
+
+```{r S1S2S3_item_model,echo=FALSE, eval=F, warning = F, message=F}
+
+# Main analysis:
+# S1.full.bm<-brm(correct~condition*z.age+z.trial+sex+(z.trial|subid) 
+
+### STUDY 1 ###
+# table(rep.S1.bayes.data$condition, rep.S1.bayes.data$item)
+# table(rep.S1.bayes.data$item)
+# table(rep.S1.bayes.data$condition)
+
+S1.item.model<-brm(correct ~ condition*z.age +z.trial +sex +(z.trial|subid) +(z.age|item), 
+               data= rep.S1.bayes.data, 
+               family=bernoulli(),
+               chains = 4,
+               iter= 5000,
+               cores= 4)
+
+S1.item.model <- add_criterion(S1.item.model, c("loo", "waic"))
+
+saveRDS(S1.item.model, "../models/S1.item.model.rds")
+
+
+### STUDY 2 ###
+# table(rep.S2.bayes.data$condition, rep.S2.bayes.data$item)
+# table(rep.S2.bayes.data$item)
+# table(rep.S2.bayes.data$condition)
+
+S2.item.model<-brm(correct ~ condition*z.age +z.trial +sex +(z.trial|subid) +(z.age|item), 
+               data= rep.S2.bayes.data, 
+               family=bernoulli(),
+               chains = 4,
+               iter= 5000,
+               cores= 4)
+
+S2.item.model <- add_criterion(S2.item.model, c("loo", "waic"))
+
+saveRDS(S2.item.model, "../models/S2.item.model.rds")
+
+### STUDY 3 ###
+# table(rep.S2.bayes.data$condition, rep.S2.bayes.data$item)
+# table(rep.S2.bayes.data$item)
+# table(rep.S2.bayes.data$condition)
+
+S3.item.model<-brm(correct ~ condition*z.age +z.trial +sex +(z.trial|subid) +(z.age|item), 
+               data= rep.S3.bayes.data, 
+               family=bernoulli(),
+               chains = 4,
+               iter= 5000,
+               cores= 4)
+
+S3.item.model <- add_criterion(S3.item.model, c("loo", "waic"))
+
+saveRDS(S3.item.model, "../models/S3.item.model.rds")
+
+```
+
+```{r S1S2S3_itemvsfull_comp, echo=FALSE, eval=F, warning = F, message=F}
+
+### MODEL COMPARISON
+
+# STUDY 1 - item vs full #######################################
+S1.itemvsfull.comp <- loo_compare(S1.item.model, S1.full.bm, 
+                                  criterion = "waic")%>%as_tibble(rownames = "index")
+
+S1.itemvsfull.comp  <- data.frame(S1.itemvsfull.comp , row.names = "index")
+
+S1.itemvsfull.weights <- model_weights(S1.item.model, S1.full.bm, criterion = "waic") 
+S1.itemvsfull.weights <- S1.itemvsfull.weights %>% as_tibble(rownames = "index")
+S1.itemvsfull.weights <- data.frame(S1.itemvsfull.weights, row.names = "index")
+
+saveRDS(S1.itemvsfull.comp, "../models/S1.itemvsfull.comp.rds")
+saveRDS(S1.itemvsfull.weights, "../models/S1.itemvsfull.weights.rds")
+
+
+# STUDY 2 - item vs full #######################################
+S2.itemvsfull.comp <- loo_compare(S2.item.model, S2.full.bm, 
+                                  criterion = "waic")%>%as_tibble(rownames = "index")
+
+S2.itemvsfull.comp  <- data.frame(S2.itemvsfull.comp , row.names = "index")
+
+S2.itemvsfull.weights <- model_weights(S2.item.model, S2.full.bm, criterion = "waic") 
+S2.itemvsfull.weights <- S2.itemvsfull.weights %>% as_tibble(rownames = "index")
+S2.itemvsfull.weights <- data.frame(S2.itemvsfull.weights, row.names = "index")
+
+saveRDS(S2.itemvsfull.comp, "../models/S2.itemvsfull.comp.rds")
+saveRDS(S2.itemvsfull.weights, "../models/S2.itemvsfull.weights.rds")
+
+
+# STUDY 3 - item vs full #######################################
+S3.itemvsfull.comp <- loo_compare(S3.item.model, S3.full.bm, 
+                                  criterion = "waic")%>%as_tibble(rownames = "index")
+
+S3.itemvsfull.comp  <- data.frame(S3.itemvsfull.comp , row.names = "index")
+
+S3.itemvsfull.weights <- model_weights(S3.item.model, S3.full.bm, criterion = "waic") 
+S3.itemvsfull.weights <- S3.itemvsfull.weights %>% as_tibble(rownames = "index")
+S3.itemvsfull.weights <- data.frame(S3.itemvsfull.weights, row.names = "index")
+
+saveRDS(S3.itemvsfull.comp, "../models/S3.itemvsfull.comp.rds")
+saveRDS(S3.itemvsfull.weights, "../models/S3.itemvsfull.weights.rds")
+
+
+```
+
+```{r S1_item_ppcheck_rhat_bulkESS_coefftables, echo=FALSE, eval=T, warning = F, message=F}
+
+S1.item.model <- readRDS("../models/S1.item.model.rds")
+S1.itemvsfull.comp <- readRDS("../models/S1.itemvsfull.comp.rds")
+S1.itemvsfull.weights <- readRDS("../models/S1.itemvsfull.weights.rds")
+
+S2.item.model <- readRDS("../models/S2.item.model.rds")
+S2.itemvsfull.comp <- readRDS("../models/S2.itemvsfull.comp.rds")
+S2.itemvsfull.weights <- readRDS("../models/S2.itemvsfull.weights.rds")
+
+
+S3.item.model <- readRDS("../models/S3.item.model.rds")
+S3.itemvsfull.comp <- readRDS("../models/S3.itemvsfull.comp.rds")
+S3.itemvsfull.weights <- readRDS("../models/S3.itemvsfull.weights.rds")
+
+
+
+# POSTERIOR PREDICTICE CHECKS ###################
+# pp_check(S1.item.model)
+# pp_check(S1.item.model, type = "bars")
+# 
+# pp_check(S2.item.model)
+# pp_check(S2.item.model, type = "bars")
+# 
+# pp_check(S3.item.model)
+# pp_check(S3.item.model, type = "bars")
+
+### inspect rhat --> always 1 --> good
+### inspect Bulk_ESS --> always > 1000 --> good
+
+#################       Estimate Est.Error l-95% CI 
+# summary(S1.item.model) # Intercept 2.04      0.23     1.61
+# summary(S2.item.model) # Intercept 1.09      0.25     0.60
+# summary(S3.item.model) # Intercept 1.06      0.21     0.64
+
+
+
+
+
+# S1 item model prepping for text and table ####################
+
+# for reporting BULK_ESS and Coefficients
+S1.item.coef <- summarise_draws(as_draws_df(S1.item.model)) # ! standard is just 90% CrI
+
+# NOTE: # as_draws_df() from posterior uses 90% CrIs
+# we preregistered using 2.5% and 97.5% quantiles
+draws_df <- as_draws_df(S1.item.model)
+quantiles_df <- as.data.frame(t(apply(draws_df, 2, quantile, probs = c(0.025, 0.975))))
+quantiles_df <- tibble::rownames_to_column(quantiles_df, var = "variable")
+names(quantiles_df)[2:3] <- c("q2.5", "q97.5")
+
+S1.item.coef <- left_join(S1.item.coef, quantiles_df, by = "variable") 
+
+# for table in appendix:
+S1.item.coef.table <- S1.item.coef
+
+# for reporting in text:
+S1.item.coef <- S1.item.coef %>% 
+  slice(1:16) %>%
+  mutate(variable = gsub("b_", "", variable)) %>% 
+  mutate(variable = gsub("condition", "", variable)) %>% 
+  data.frame(row.names = "variable")
+
+
+
+# S2 item model prepping for text and table ####################
+
+# for reporting BULK_ESS and Coefficients
+S2.item.coef <- summarise_draws(as_draws_df(S2.item.model)) # ! standard is just 90% CrI
+
+# NOTE: # as_draws_df() from posterior uses 90% CrIs
+# we preregistered using 2.5% and 97.5% quantiles
+draws_df <- as_draws_df(S2.item.model)
+quantiles_df <- as.data.frame(t(apply(draws_df, 2, quantile, probs = c(0.025, 0.975))))
+quantiles_df <- tibble::rownames_to_column(quantiles_df, var = "variable")
+names(quantiles_df)[2:3] <- c("q2.5", "q97.5")
+
+S2.item.coef <- left_join(S2.item.coef, quantiles_df, by = "variable") 
+
+# for table in appendix:
+S2.item.coef.table <- S2.item.coef
+
+# for reporting in text:
+S2.item.coef <- S2.item.coef %>% 
+  slice(1:16) %>%
+  mutate(variable = gsub("b_", "", variable)) %>% 
+  mutate(variable = gsub("condition", "", variable)) %>% 
+  data.frame(row.names = "variable")
+
+
+
+# S3 item model prepping for text and table ####################
+
+# for reporting BULK_ESS and Coefficients
+S3.item.coef <- summarise_draws(as_draws_df(S3.item.model)) # ! standard is just 90% CrI
+
+# NOTE: # as_draws_df() from posterior uses 90% CrIs
+# we preregistered using 2.5% and 97.5% quantiles
+draws_df <- as_draws_df(S3.item.model)
+quantiles_df <- as.data.frame(t(apply(draws_df, 2, quantile, probs = c(0.025, 0.975))))
+quantiles_df <- tibble::rownames_to_column(quantiles_df, var = "variable")
+names(quantiles_df)[2:3] <- c("q2.5", "q97.5")
+
+S3.item.coef <- left_join(S3.item.coef, quantiles_df, by = "variable") 
+
+
+
+# for table in appendix:
+S3.item.coef.table <- S3.item.coef
+
+
+# for reporting in text:
+S3.item.coef <- S3.item.coef %>% 
+  slice(1:16) %>%
+  mutate(variable = gsub("b_", "", variable)) %>% 
+  mutate(variable = gsub("condition", "", variable)) %>% 
+  data.frame(row.names = "variable")
+
+```
+
+```{r S1S2S3_item_plotting, echo=FALSE, eval=T, warning = F, message=F}
+
+# prep data 1 #######
+
+S1.item_effects <- ranef(S1.item.model)$item
+
+# Extract random intercepts
+S1.item_intercepts <- as_tibble(S1.item_effects[, , "Intercept"], rownames = "item") %>%
+  rename(
+    estimate = Estimate,
+    lower = Q2.5,
+    upper = Q97.5) %>% 
+  mutate(condition = substr(item,1,4)) %>% 
+  mutate(item = substr(item, 10,10)) %>% 
+  mutate(condition = case_when(
+    condition == "repr" ~ "Representation", 
+    condition == "pars" ~ "Pars Pro Toto",
+    condition == "fsim" ~"Simple Form Analogy",
+    condition == "fcom" ~ "Complex Form Analogy",
+    condition == "abpo" ~ "Absolute Position",
+    condition == "repo" ~ "Relative Position",
+    condition == "orob" ~ "Orientation of Object",
+    condition == "orfe" ~ "Orientation of Feature",
+    condition == "siob" ~ "Size of Object", 
+    condition == "sife" ~ "Size of Feature", 
+    condition == "nuob" ~ "Number of Object", 
+    condition == "nufe" ~ "Number of Feature",
+    TRUE ~ as.character(condition))) %>% 
+  mutate(condition = factor(condition, levels = c(
+    "Representation", # first level becomes reference
+    "Pars Pro Toto", 
+    "Simple Form Analogy", 
+    "Complex Form Analogy"))) %>% 
+  mutate(item = factor(item, levels = c("4", "3", "2", "1")))
+
+S1.item_intercepts <- add_colour(S1.item_intercepts)
+
+# prep data 2 ######################
+
+S2.item_effects <- ranef(S2.item.model)$item
+
+# Extract random intercepts
+S2.item_intercepts <- as_tibble(S2.item_effects[, , "Intercept"], rownames = "item") %>%
+  rename(
+    estimate = Estimate,
+    lower = Q2.5,
+    upper = Q97.5) %>% 
+  mutate(condition = substr(item,1,4)) %>% 
+  mutate(item = substr(item, 10,10)) %>% 
+  mutate(condition = case_when(
+    condition == "repr" ~ "Representation", 
+    condition == "pars" ~ "Pars Pro Toto",
+    condition == "fsim" ~"Simple Form Analogy",
+    condition == "fcom" ~ "Complex Form Analogy",
+    condition == "abpo" ~ "Absolute Position",
+    condition == "repo" ~ "Relative Position",
+    condition == "orob" ~ "Orientation of Object",
+    condition == "orfe" ~ "Orientation of Feature",
+    condition == "siob" ~ "Size of Object", 
+    condition == "sife" ~ "Size of Feature", 
+    condition == "nuob" ~ "Number of Object", 
+    condition == "nufe" ~ "Number of Feature",
+    TRUE ~ as.character(condition))) %>% 
+  mutate(condition = factor(condition, levels = c(
+    "Absolute Position",
+    "Relative Position",
+    "Orientation of Object",
+    "Orientation of Feature"))) %>%
+  mutate(item = factor(item, levels = c("4", "3", "2", "1")))
+
+S2.item_intercepts <- add_colour(S2.item_intercepts)
+
+
+
+# prep data 3 #####################
+
+S3.item_effects <- ranef(S3.item.model)$item
+
+# Extract random intercepts
+S3.item_intercepts <- as_tibble(S3.item_effects[, , "Intercept"], rownames = "item") %>%
+  rename(
+    estimate = Estimate,
+    lower = Q2.5,
+    upper = Q97.5) %>% 
+  mutate(condition = substr(item,1,4)) %>% 
+  mutate(item = substr(item, 10,10)) %>% 
+  mutate(condition = case_when(
+    condition == "repr" ~ "Representation", 
+    condition == "pars" ~ "Pars Pro Toto",
+    condition == "fsim" ~"Simple Form Analogy",
+    condition == "fcom" ~ "Complex Form Analogy",
+    condition == "abpo" ~ "Absolute Position",
+    condition == "repo" ~ "Relative Position",
+    condition == "orob" ~ "Orientation of Object",
+    condition == "orfe" ~ "Orientation of Feature",
+    condition == "siob" ~ "Size of Object", 
+    condition == "sife" ~ "Size of Feature", 
+    condition == "nuob" ~ "Number of Object", 
+    condition == "nufe" ~ "Number of Feature",
+    TRUE ~ as.character(condition))) %>% 
+  mutate(condition = factor(condition, levels = c(
+    "Size of Object", # first level becomes reference
+    "Size of Feature",
+    "Number of Object",
+    "Number of Feature"))) %>%
+  mutate(item = factor(item, levels = c("4", "3", "2", "1")))
+
+S3.item_intercepts <- add_colour(S3.item_intercepts)
+
+
+
+# plot 1 ##################
+S1.item.plot <- ggplot(S1.item_intercepts, aes(x = item, y = estimate)) +
+  geom_point(aes(color = I(colour))) +
+  geom_errorbar(aes(ymin = lower, ymax = upper, color = I(colour)), width = 0.6, size = .5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  coord_flip() +
+  facet_wrap(~ condition, scales = "free_y", ncol = 1) +
+  scale_y_continuous(limits = c(-1, 1)) +
+  labs(
+    x = "Item",
+    y = "Estimated Deviation from Overall Intercept (log-odds)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 6),
+    axis.title.x  = element_text(size = 8),     
+    axis.title.y  = element_text(size = 8),
+    legend.position = "none",  
+    strip.text = element_text(size = 8, face = "bold"))
+
+# plot 2 ############
+
+S2.item.plot <- ggplot(S2.item_intercepts, aes(x = item, y = estimate)) +
+  geom_point(aes(color = I(colour))) +
+  geom_errorbar(aes(ymin = lower, ymax = upper, color = I(colour)), width = 0.6, size = .5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  coord_flip() +
+  facet_wrap(~ condition, scales = "free_y", ncol = 1) +
+  labs(
+    x = "Item",
+    y = "Estimated Deviation from Overall Intercept (log-odds)"
+  ) +
+  scale_y_continuous(limits = c(-1, 1)) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 6),
+    axis.title.x  = element_text(size = 8),     
+    axis.title.y  = element_text(size = 8),     
+    legend.position = "none",  
+    strip.text = element_text(size = 8, face = "bold"))
+
+# plot 3 ################################
+
+S3.item.plot <- ggplot(S3.item_intercepts, aes(x = item, y = estimate)) +
+  geom_point(aes(color = I(colour))) +
+  geom_errorbar(aes(ymin = lower, ymax = upper, color = I(colour)), width = 0.6, size = .5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  coord_flip() +
+  facet_wrap(~ condition, scales = "free_y", ncol = 1) +
+  labs(
+    x = "Item",
+    y = "Estimated Deviation from Overall Intercept (log-odds)"
+  ) +
+  scale_y_continuous(limits = c(-1, 1)) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 6),
+    axis.title.x  = element_text(size = 8),     
+    axis.title.y  = element_text(size = 8),
+    legend.position = "none",  
+    strip.text = element_text(size = 8, face = "bold"))
+
+# combine plots  ##################
+
+# hide x axis
+S1.item.plot <- S1.item.plot + theme(axis.title.x = element_blank(),
+                                       axis.text.x  = element_blank(),
+                                       axis.ticks.x = element_blank())
+S2.item.plot <- S2.item.plot + theme(axis.title.x = element_blank(),
+                                       axis.text.x  = element_blank(),
+                                       axis.ticks.x = element_blank())
+
+
+S1S2S3_item_plot <- plot_grid(
+  S1.item.plot, 
+  S2.item.plot, 
+  S3.item.plot,
+  ncol = 1,
+  labels = c("A", "B", "C"),
+  label_size = 10,
+  label_y = .95,   # vertical center
+  hjust = -4,    # shift labels left
+  align = "v", axis = "tb"
+)
+
+
+ggsave(
+  filename = "../illustrations/S1S2S3_item_plot.pdf",
+  plot = S1S2S3_item_plot,
+  width = 17,
+  height = 21,
+  units = "cm",
+  dpi = 600   
+)
+
+ggsave(
+  filename = "../illustrations/S1S2S3_item_plot.png",
+  plot = S1S2S3_item_plot,
+  width = 17,
+  height = 21,
+  units = "cm",
+  dpi = 600   
+)
+
+ggsave(
+  filename = "../illustrations/S1S2S3_item_plot.jpg",
+  plot = S1S2S3_item_plot,
+  width = 17,
+  height = 21,
+  units = "cm",
+  dpi = 600   
+)
+
+
+```
+
+```{r rep_s1_item_unclear, echo = FALSE, include=F, eval=F, results='asis'}
+
+S1.item.model
+
+
+S1.full.bm <- readRDS("../models/S1.full.bm.rds")
+S1.null.bm <- readRDS("../models/S1.null.bm.rds")
+
+S1.comp <- readRDS("../models/S1.comp.rds")
+S1.weights <- readRDS("../models/S1.weights.rds")
+
+### POSTERIOR PREDICTICE CHECKS
+### Check plots ...they look good, as expected in binomial models
+# pp_check(S1.full.bm)
+# pp_check(S1.null.bm)
+# pp_check(S1.full.bm, type = "bars")
+# pp_check(S1.null.bm, type = "bars")
+
+### EFFECTICE SAMPLE SIZES
+### inspect rhat --> always 1 --> good
+### inspect Bull_ESS --> always > 1000 --> good
+# summary(S1.full.bm)
+# summary(S1.null.bm)
+
+# for reporting BULK_ESS and Coefficients
+S1.full.coef <- summarise_draws(as_draws_df(S1.full.bm)) # ! standard is just 90% CrI
+
+# NOTE: # as_draws_df() from posterior uses 90% CrIs
+# we preregistered using 2.5% and 97.5% quantiles
+draws_df <- as_draws_df(S1.full.bm)
+quantiles_df <- as.data.frame(t(apply(draws_df, 2, quantile, probs = c(0.025, 0.975))))
+quantiles_df <- tibble::rownames_to_column(quantiles_df, var = "variable")
+names(quantiles_df)[2:3] <- c("q2.5", "q97.5")
+
+S1.full.coef <- left_join(S1.full.coef, quantiles_df, by = "variable") 
+
+# for table in appendix:
+S1.full.coef.table <- S1.full.coef
+
+# for reporting in text:
+S1.full.coef <- S1.full.coef %>% 
+  filter(grepl("^b_", variable)) %>% 
+  mutate(variable = gsub("b_", "", variable)) %>% 
+  mutate(variable = gsub("condition", "", variable)) %>% 
+  data.frame(row.names = "variable")
+
+S1.null.coef <- summarise_draws(as_draws_df(S1.null.bm)) %>%
+  filter(grepl("^b_", variable))
+# 
+# mean(S1.full.coef$ess_bulk)
+# min(S1.full.coef$ess_bulk)
+# max(S1.full.coef$ess_bulk)
+# 
+# mean(S1.null.coef$ess_bulk)
+# min(S1.null.coef$ess_bulk)
+# max(S1.null.coef$ess_bulk)
+
+
+```
+
+<!-- Manuscript starts here -->
+
+## Lay Summary (max. 120 words)
+
+Young children are skilled at understanding spoken language and
+gestures, but much less is known about how they make sense of graphic
+communication. We explored how children aged 3 to 7 interpret unfamiliar
+graphic displays in a picture-book-style game of hide and seek where
+they had to choose the correct hiding place based on a drawn cue. Across
+three studies, we tested several symbol–object relationships, ranging
+from clear representations to less iconic cues based on shape, size,
+number, orientation or spatial arrangement. Children followed
+representational drawings at three, but the understanding of more
+abstract symbols emerged around the fourth birthday. These findings show
+how children gradually learn to find meaning in increasingly complex
+visual symbols prior to literacy.
+
+# Introduction
+
+The development of symbolic understanding - encompassing language,
+gesture, and symbolic artifacts - is a cornerstone of human
+enculturation and a hallmark of cognitive capacities defining the human
+mind [@Tomasello2014natural; @Vygotsky1980mind]. Within this
+developmental trajectory, the acquisition of oral language and the
+subsequent mastery of literacy [@Dehaene2009reading; @Bruner1996culture;
+@olson1994world] represent two of the most transformative milestones in
+cultural learning, each yielding profound consequences for children's
+cognitive architecture [@karmiloff1994beyond]. To elucidate the
+underlying mechanisms, researchers have examined how children from
+infancy through the preschool years negotiate various symbolic media,
+including gestures, words, photographs, representative drawings, maps,
+models, and sound symbolism [@callaghan2015development].
+
+The symbolic object-choice task serves as a primary paradigm for
+investigating these capacities. In a typical procedure, children engage
+in a "hide-and-seek" game where, after familiarization with the goal of
+retrieving a target from one of two containers, the hiding process is
+obscured. At test, the experimenter provides a communicative cue to
+guide the search. Researchers have manipulated these cues to probe the
+ontogeny of symbolic appreciation, ranging from social signals like
+gaze, reaching, pointing or iconic gestures [@Tomasello2007new;
+@behne2012twelve; @sodian2004infants; @Tomasello1999do;
+@bohn2019natural], to artifacts such as arrows, markers, replicas
+[@Leekam2010adults; @Tomasello1997comprehension; @callaghan2000factors],
+graphic symbols such as drawings or photographs [@callaghan2000factors;
+@deloache1991symbolic], and even arbitrary signals like turning on a
+light [@moore2013three]. Standard analyses of this paradigm
+[@tomasello2010origins] suggest that success requires navigating several
+inferential layers. Within a cooperative framework, the child must first
+construe the interaction as a joint endeavor with a competent partner,
+allowing them to treat the cue as a deliberate communicative act rather
+than a random event. Retrieval then necessitates a dual inference:
+recognizing the cue’s pragmatic relevance to the immediate goal and then
+mapping the symbol-referent relationship - whether via deixis,
+iconicity, or spatio-temporal contiguity. Ultimately, the task demands
+both: appreciating the partner's intent (pragmatic inference) and the
+structural match between cue and target (analogical inference).
+
+Although infants interpret communicative signals such as pointing and
+gaze direction by the end of the first year, their ability to exploit
+symbolic artifacts emerges significantly later. The seminal work of
+DeLoache and colleagues has been instrumental in charting this
+development, demonstrating that children’s capacity to use scale models,
+pictures, videos, and maps as informative tools undergoes a rapid
+transformation during the third year of life [@deloache2004becoming;
+@deloache2011early; @deloache1991symbolic]. A robust finding across this
+literature is the 30-to-36-month transition: while 30-month-olds
+typically fail to use a scale model to locate a hidden item,
+36-month-olds excel, mastering the concept of "dual representation"
+enabling them to see an artifact as both an object and a symbol
+[@deloache2004becoming; @callaghan2015development]. A parallel
+developmental trajectory is evident in the domain of graphic
+representation: functional use of graphic representations such as line
+or pencil drawings in choice tasks remains fragile until approximately
+age three. For instance, while children as young as 30 months may use
+shape to interpret drawings when intentionality is clear
+[@gelman1998shape], Callaghan [-@callaghan1999early] found that at 24
+months children still struggle to select items based on representative
+drawings. This fragility is underscored by findings that 30-month-olds
+often fail to benefit from iconicity in either drawings or replica
+objects, whereas 36-month-olds reliably succeed in object-choice-tasks
+across varying levels of stylization [@callaghan2000factors;
+@DeLoache1995early].
+
+Hence, from 36 months onward, it may be productive to investigate
+whether children can comprehend symbol-referent-relationships that are
+less dependent on iconicity. In the context of the studies presented
+below, we discuss various symbol-referent-relationships as exhibiting
+iconicity in varying degrees [@winter2026defining] and place them on a
+continuum from iconic to abstract: when symbol and referent are very
+similar and specifically share surface level features such as shape,
+their relation is highly iconic. To the extent that symbol and referent
+do not share surface level features but rather structural or relational
+properties, they are less iconic and more abstract. While iconicity
+provides an entry point for symbol-grounding in graphic communication
+[@callaghan2000factors] much like in the gestural domain
+[@callaghan2015development; @fay2014iconicity; @bohn2019natural], it is
+generally also possible to draw less on visual resemblance and establish
+reference via analogies in size, number, orientation, position or
+gestalt principles - all of which are serving as fundamental avenues for
+encoding information in the graphic domain [@cleveland1984graphical;
+@stevenson2014visual; @donnelly2007visual]. Any
+symbol-referent-relationship that children can spontaneously use early
+may be of particular relevance for our understanding of emerging and
+graphical literacy and the development of graphic systems of
+communication. Defining the precise ages and relative developmental
+trajectories for children’s sensitivity to using these graphic
+primitives as conveying meaning and for disambiguating reference in
+object-choice-tasks will provide crucial insights into children’s
+developing symbolic competence and the interplay of communicative and
+analogical capacities.
+
+While children appear generally able to make comparisons along the
+dimensions of shape, orientation, size and number, studies directly
+testing them as grounds for establishing reference are rare
+[@callaghan2015development]. A highly valuable point of reference can be
+found in the literature on relational and non-relational match-to-sample
+tasks where studies often comprise various stimulus sets or conditions
+probing these matching dimensions. While matching shapes in
+match-to-sample (MTS) tasks poses little challenge for children beyond
+age three [@kroupin2022you; @gerhardstein2002development], utilizing
+relational dimensions like size or number remains difficult. Even by age
+four, children rarely spontaneously infer size as a matching criterion
+in three-item MTS arrays, and success in number-based matching typically
+emerges between ages four and five [@kroupin2022you]. These difficulties
+intensify in relational match-to-sample (RMTS) tasks, which require
+coordinating at least six items to identify higher-order patterns of
+identity (AA, BB, AB) or difference (AB, BA, BB). Mastery across
+dimensions is generally absent prior to age five, as the task requires
+navigating abstract generalizations and suppressing prepotent responses
+to superficial features - taxing both executive function and working
+memory [@kroupin2022importance; @kroupin2022you; @gentner2017analogy].
+However, performance can be scaffolded. Four-year-olds succeed when
+relations are embedded in causal narratives [@goddu2020transformations],
+and even three-year-olds improve following explicit training with the
+terms *same* and *different* [@christie2014language]. A critical
+distinction exists between these paradigms and symbolic object-choice
+tasks. In MTS/RMTS, children are explicitly instructed to find matches
+as an end in itself. Conversely, the symbolic object-choice context
+requires an additional communicative inference: children must recognize
+that a cue was produced intentionally to guide their behavior and that
+its meaning derives from a specific relation to a target. Consequently,
+symbolic object-choice tasks represent a more demanding testing ground,
+probing whether young children can deploy their nascent analogical
+reasoning skills within a practical, goal-directed interaction.
+
+From this overview, several research desiderata emerge. The prevailing
+literature’s heavy reliance on similarity and iconicity in the context
+of graphic communication [@callaghan2015development] leaves the broader
+scope of children’s symbolic flexibility largely unexplored. Because
+most studies employ depictions of real-world objects, results may be
+influenced by children’s familiarity with canonical features
+[@long2019real] or cultural graphic conventions. The present work
+provides a systematic investigation into the diverse dimensions along
+which graphic symbols can be imbued with meaning and traces development
+continuously through the pre-school years employing the symbolic
+object-choice task as one coherent and simple paradigm. By utilizing
+novel abstract graphic displays as cues and geometric shapes as targets,
+this study isolates children’s ability to identify
+symbol-referent-relationships and apply pragmatic inferences in context,
+largely independent of prior knowledge of script, numerals, or
+conventional icons. By omitting training, instruction, or feedback, our
+approach ensures that responses reflect what children find naturally
+meaningful. Consequently, the studies below showcase young children's
+capacity to spontaneously grasp novel symbol-referent pairings offering
+critical insights into the learnability and emergence of communicative
+systems at a time when conventional symbolic mastery is rapidly
+expanding.
+
+# Study 1
+
+Study 1 aimed to establish a baseline for children's performance and for
+evaluating task demands by providing the simplest symbol-referent
+relationship possible, where the cue is a direct representation of the
+target (*Representation*), which children should master at the end of
+the third year [@callaghan1999early; @callaghan2000factors]. From this,
+three further conditions were derived that were also relying on shape as
+a means for establishing reference but that were less iconic by either
+reducing the amount of information provided (*Pars Pro Toto*), or the
+amount of similarity between cue and target (*Simple Form Analogy*,
+*Complex Form Analogy*). With *Pars Pro Toto* likely being more
+challenging than *Representation* due to the completion required, and
+form analogies being relatively abstract, our preregistered hypothesis
+was that as a group, children will first succeed with *Representation*,
+then *Pars Pro Toto*, *Simple Form Analogy* and finally *Complex Form
+Analogy*. The study was preregistered online prior to data collection
+(please see [Prerigistration Study1](https://aspredicted.org/SJT_H7F):
+<https://aspredicted.org/SJT_H7F>). The stimuli, experiments, data and
+analyses for all studies reported below are available at:
+<https://github.com/GregorKachel/symlit_rep_manuscript>.
+
+## Participants and Sample
+
+In order to continuously trace the development of symbolic competences
+across the preschool years, we aimed to test a minimum of two children
+per month of age between the third and the seventh birthday for a total
+of 96 participants. As children participated on the basis of
+availability and data were collected by several experimenter teams in
+parallel, the number of participants slightly exceed the preregistered
+minimum sample size. A sample of `r rep.age.table.data["study1", "N"]`
+children (M = `r rep.age.table.data["study1", "Mean"]` months, SD =
+`r rep.age.table.data["study1", "SD"]` months, range
+`r rep.age.table.data["study1", "Min"]` -
+`r rep.age.table.data["study1", "Max"]` months;
+`r rep.age.table.data["study1", "female"]` female) participated in
+Study 1. In addition, `r rep.drop.table.data["study1", "N"]` children
+(`r rep.drop.table.data["study1", "female"]` female) were tested but
+excluded from analysis for not succeeding during familiarization (N =
+`r rep.drop.table.data["study1", "fail_in_fam"]`), for not completing at
+least eight out of 16 test trials (N =
+`r rep.drop.table.data["study1", "quit_early"]`), or due to being fussy
+(N = `r rep.drop.table.data["study1", "fussy_child"]`). For
+`r rep.drop.table.data["study1", "language"]` children, experimenters
+only learned during testing that they were not fluent enough in German
+to participate as their families had only recently migrated. Finally,
+`r rep.drop.table.data["study1", "technical"]` children had to be
+excluded due to technical issues. A total of
+`r sum(rep.s1.trials$Trials)` trials (mean per condition =
+`r mean(rep.s1.trials$Trials)`, range: `r min(rep.s1.trials$Trials)` -
+`r max(rep.s1.trials$Trials)`) from
+`r rep.age.table.data["study1", "N"]` participants were submitted for
+analysis. All participants were recruited in Leipzig, a medium-sized
+European city, and came from a predominantly white population of middle
+to high income families. Children were largely tested in day- and after
+school-care, and occasionally in the lab or at home. Data collection
+took place from June 2022 to February 2023. For an overview and
+comparison of the distribution of all children included in the analyses
+of studies 1-3, see supplement figure 1. Figure 2 from the supplements
+shows the age-distribution of all children that participated but were
+not submitted to analyses due to the exclusion criteria outlined above.
+
+## Setup and Procedure
+
+During test sessions, a child and an experimenter sat down together to
+play a picture-book-style hiding game presented on a touch-screen
+laptop. Verbal instructions were played back by the experimental script.
+Experimenters supervised children and occasionally reacted with a fixed
+set of verbal prompts when children were not following the presentation
+("Oh look, the game continues!"). See figure
+\@ref(fig:plot-figure-setup) A for an illustration of the setup.
+
+```{r plot-figure-setup, fig.cap = "*Setup, Stimuli and Trial Structure.* Panel A shows the setup during testing. Experimenters were sitting behind the children in order to not distract them while supervising data collection. Panel B shows all elements contributing to an item of a possible test trial consisting of two choice options and one of two possible cues. Panel C exemplifies how two choice options and one of the cues were arranged for a specific test trial. Panel D shows a familiarization trial and Panel E shows a test trial.", fig.align = "center", echo = FALSE, out.width = "95%"}
+
+knitr::include_graphics(knitr::plot_crop("../illustrations/setup complete.png"))
+
+```
+
+**ALT-TEXT FIGURE 1** *A set of illustrations labelled A to E with panel A showing how child and experimenter were seated during the study, Panel B showing the stimulus material for a specific trial, panel C illustrating how the stimuli were arranged on screen, and Panels D and E providing a picture-sequence of the steps in the familiarization and test trials.*
+
+*Familiarization.* First, the experimental script introduced a cartoon
+monkey. This character placed two cups on the bottom left and right side
+of the screen. After holding up a banana, one of the barriers was
+lifted, the banana was placed underneath one of the cups and the barrier
+was lowered. Children were now prompted to touch the hiding place and in
+doing so the barrier of their choice was lifted to reveal the banana if
+they chose correctly. The experimental script provided feedback upon
+children's choice ("yes, great job!"; "No, that's not it. Let's try
+again!") during the familiarization (cf. figure
+\@ref(fig:plot-figure-setup) D). To ensure that children were familiar
+with the goal of the game and the touch interface, they first had to
+complete a set of four to eight familiarization trials with a success
+rate of 75%. In case a child did not reply correctly in three out of
+four trials, another four familiarization trials were provided. If the
+child was correct in six out of eight trials, she was included in the
+main sample. Children that did not succeed were allowed to participate
+but their data was not submitted to analysis.
+
+*Test.* The main phase of the study commenced with announcing that the
+cartoon character had an idea for a new game. Now, children were not
+allowed to see where the banana would be hidden, but that the monkey
+would help them find it. The cartoon character was established as a
+knowledgeable and benevolent partner in a cooperative coordination game
+("Coco is going to help you find the banana. Coco is drawing something
+for you."). After the hiding phase, the monkey held up a piece of paper
+and a pencil. Pencil movement and a short scribble sound indicated that
+the monkey was drawing. Finally, participants were prompted with the
+phrase "Where is the banana?" and the monkey's drawing was placed in the
+center between the two hiding places. The drawing served as a cue to
+guide children's choice. Children's choice was acknowledged with neutral
+feedback ("Ah, thank you") leading to the next trial (cf. figure
+\@ref(fig:plot-figure-setup) E).
+
+A single trial lasted roughly 20 to 60 seconds. Unique combinations of
+graphic displays were used on every trial for a maximum of 16 test
+trials. Test sessions lasted about 12 minutes in total. Children
+occasionally wished to stop before completing all trials, resulting in
+minor deviations of the total number of trials per condition that were
+submitted to analysis. For an overview of the average number of trials
+participants received in each condition, see supplementary materials. In
+line with the preregistration, children had to complete a minimum of
+eight test trials to be included in analysis.
+
+## Stimuli and Counterbalancing
+
+Children were tested with four conditions exemplifying different
+symbol-referent relationships. The order of conditions was
+counterbalanced across participants. For each condition, four sets of
+stimuli were designed, consisting of two blue shapes serving as target
+or distractor, and two drawings that could serve as cues. The
+choice-options in the hiding game were designed to saliently differ in
+one relevant dimension and to be as similar as possible with regard to
+other features. The cues were reduced and less straight-lined graphic
+displays akin to hand drawings and matching either choice option. Across
+participants the same choice options served equally often as targets and
+distractors. Across children, the position (left/right) of the target,
+and the identity of the cue were counterbalanced. For an illustration of
+trial composition, see figure \@ref(fig:plot-figure-setup) B and C. For
+each condition, four stimulus versions were created with two variations
+each. For an example, consider figure \@ref(fig:plot-study1). The first
+box in Panel B shows all stimuli for the *Representation* condition. The
+first column exemplifies a set of targets (a blue square and circle) and
+cues (outline drawings of a square and circle). During test, children
+saw each trial combination only once and with only one of the two
+possible cues.
+
+To make the four conditions in study 1 as comparable as possible, they
+were all employing the same target stimuli (cf. figure
+\@ref(fig:plot-study1stimuli)). In the condition
+*Representation,* the graphical cue was an outline drawing of the
+target. The second condition, *Pars Pro Toto,* refered to the targets by
+means of a part-whole relationship. This required children to complete
+the shapes according to gestalt principles. While this was easiest in
+the first two items of *Pars pro Toto* due to the canonical shapes
+(square, circle) it was less obvious with the less canonical shapes
+albeit they were vertically and horizontally symmetrical on purpose (cf.
+\@ref(fig:plot-study1stimuli) B, box 2). Two further conditions aimed to
+abstract from the original representational symbol-referent relationship
+by providing graphical analogies in form. In both *Simple Form Analogy*
+and *Complex Form Analogy* the cue was an abstract line drawing being
+more round or rectangular, thereby referring to either the round or
+rectangular equivalent of the target shapes. As this has not been done
+before in developmental research, our aim was to provide two versions of
+form analogies both supporting children's comprehension in distinct
+ways. In *Simple Form Analogy*, the cues are less dense and therefore
+simpler to grasp, whereas the more complex versions in *Complex Form Analogy* provide more information. For an overview of all stimuli employed in Study 1, see figure \@ref(fig:plot-study1stimuli).
+
+```{r plot-study1stimuli, fig.cap = "*Stimuli for Study 1.* Panels illustrate (A) an example stimulus combination (distractor, cue, target), and (B) all items of the four conditions with targets in blue and cues as drawings.", fig.align = "center", echo = FALSE, out.width = "95%"}
+
+knitr::include_graphics(knitr::plot_crop("../illustrations/S1_Stimuli.png"))
+
+```
+
+**ALT-TEXT FIGURE \@ref(fig:plot-study1stimuli)** *A panel of illustrations of the stimulus material used in study 1. The top-row shows an example for a specific trial (cue, target, distractor), the second row has 4x4 matrices with all stimuli of the conditions.*
+
+## Data Handling and Analyses
+
+Upon touching the screen, children's choices were logged and immediately
+coded as correct or incorrect by the code running the stimulus
+presentation. To evaluate how children’s ability to interpret cues
+varies by age and condition, we employed Bayesian Logistic Generalized
+Linear Mixed Models (GLMMs). This mode of analysis is appropriate as it
+allows to estimate the probability of success while accounting for
+uncertainty and individual differences, and because it allows mapping
+linear predictors to a probability between 0 and 1 via a link function.
+Our analyses modeled children's binary choices (correct vs. incorrect)
+using fixed effects for condition and age, as well as their interaction
+as primary predictors. In addition, we included a fixed effect of trial
+number, to control for learning or fatigue, and a fixed effect of sex.
+To account for the possibility that some children may be better at the
+task than others, we included random intercepts for each participant. We
+also included random slopes for trial number, allowing potential effects
+of learning or fatigue to vary from child to child. To facilitate
+processing and interpretability, age and trial number were standardized
+to a natural mean of 0 prior to modeling. The full model notation was
+`correct ~ condition*z.age + z.trial + sex + (z.trial | subid)`. We
+evaluated the relevance of age and condition for children’s performance
+prior to interpreting coefficients. For this, the full model outlined
+above was compared with a reduced model lacking the interaction of age
+and condition. To assess the fit and relative explanatory power of
+either model, we used the Widely Applicable Information Criterion (WAIC)
+scores and weights [@mcelreath2018statistical] as well as the difference
+in Expected Log Predictive Density (ELPD) via the function *loo_compare*
+[@sivula2020uncertainty]. Model estimates were inspected for the
+different predictors including their 95% Credible Interval (CrI).
+*Representation* was hypothesized to be the most simple and was set as
+the reference level within conditions. All models were implemented in
+Stan [@RStan] via the function *brm* of the package *brms*
+[@burkner2017brms].
+
+In order to answer our main research question of when children as a
+group perform above chance in each condition, we followed the approach
+of House and colleagues [@House2013ontogeny] and plotted the model
+estimates as a smoothed curve surrounded by Credible Intervals (CrI). We
+generated developmental trajectories with 95% CrIs from the posterior
+predicted distribution via the function *fitted* and plotted them with
+children's age on the horizontal axis and the probability of correct
+choices on the vertical axis. Chance level was marked via a 50% chance
+line for orientation. Children as a group were considered to perform
+above chance only when the lower bound of the 95% CrI no longer
+overlapped with the 50% chance line (e.g. figures
+\@ref(fig:plot-study1), \@ref(fig:plot-study2), and
+\@ref(fig:plot-study3)). Thereby, we can estimate a month of age for
+each condition that anchors an approximate developmental window during
+which children are likely to master the symbol-referent-relationship in
+question. As we are testing all conditions in a within-subjects-design,
+these estimates are especially helpful for evaluating the relative
+difficulty of the different conditions.
+
+All analyses and our hypotheses about the relative difficulty of
+conditions were preregistered prior to data collection. However, the
+specific age-point predictions are exploratory, and our use of ELPD for
+model comparison [@sivula2020uncertainty] represents a modern refinement
+over the methods available at the time of preregistration. To
+additionally evaluate variability at the level of the items tested,
+additional exploratory analyses included item level random effects
+(Model notation
+`correct ~ condition*z.age +z.trial +z.sex +(z.trial|id) +(z.age|item)`).
+For brevity, tables outlining the coefficients for the final models were
+moved to the supplementary materials along with the exploratory
+item-level analyses. The supplements also provide conventional analyses
+binning participants according to their age in years for readers that
+are less familiar with the analyses described above. In the supplements,
+two-tailed one-sample t-tests with a chance level set to .5 were
+computed for participants binned according to year of age. Here, Cohen’s
+*d* is provided as a standardized effect size for significance testing.
+
+## Results
+
+Model diagnostics indicated convergence, excellent fit and reliable
+posterior estimates for both full and null model with comparable WAIC
+and ELPD results (see supplements for detailed results). In the absence
+of substantial differences, results from the full model are reported
+below in line with the preregistration. Relative to the *Representation*
+condition, the *Simple Form Analogy* ($\beta$ =
+`r S1.full.coef["SimpleFormAnalogy", "mean"]`, 95% CrI
+[`r S1.full.coef["SimpleFormAnalogy", "q2.5"]`,
+`r S1.full.coef["SimpleFormAnalogy", "q97.5"]`]) and *Complex Form
+Analogy* ($\beta$ = `r S1.full.coef["ComplexFormAnalogy", "mean"]`, 95%
+CrI [`r S1.full.coef["ComplexFormAnalogy", "q2.5"]`,
+`r S1.full.coef["ComplexFormAnalogy", "q97.5"]`]) have a considerably
+lower probability of correct responses. The *Pars Pro Toto* condition
+has no clear difference from the *Representation* condition ($\beta$ =
+`r S1.full.coef["ParsProToto", "mean"]`, 95% CrI
+[`r S1.full.coef["ParsProToto", "q2.5"]`,
+`r S1.full.coef["ParsProToto", "q97.5"]`]). Interaction effects with age
+were not relevant with the exception of *Pars Pro Toto*. Here, the
+interaction with age was positive and just above zero ($\beta$ =
+`r S1.full.coef["ParsProToto:z.age", "mean"]`, 95% CrI
+[`r S1.full.coef["ParsProToto:z.age", "q2.5"]`,
+`r S1.full.coef["ParsProToto:z.age", "q97.5"]`]), suggesting that
+performance increased more steeply across the age range than in the
+*Representation* condition*.* Generally, participants’ performance
+improved with age in all conditions ($\beta$ =
+`r S1.full.coef["z.age", "mean"]`, 95% CrI
+[`r S1.full.coef["z.age", "q2.5"]`,
+`r S1.full.coef["z.age", "q97.5"]`]). In contrast, trial number has no
+clear effect on performance ($\beta$ =
+`r S1.full.coef["z.trial", "mean"]`, 95% CrI
+[`r S1.full.coef["z.trial", "q2.5"]`,
+`r S1.full.coef["z.trial", "q97.5"]`]), suggesting no evidence for
+learning or fatigue throughout the test session. For a side-by-side
+comparison of the developmental trajectories in the four conditions of
+study 1 and estimates for the ages of success, see figure \@ref(fig:plot-study1).
+
+```{r plot-study1, fig.cap = "*Developmental Trajectories for Study 1.* Transparent dots represent individual means for participants. Coloured lines indicate smoothed mean performance by age. Shaded areas represent 95% CrIs. The dashed line demarcates chance level. The colored dots and annotations indicate when children's performance exceeds chance level. Overlays provide example stimuli for each condition.", fig.align = "center", echo = FALSE, out.width = "95%"}
+
+knitr::include_graphics(knitr::plot_crop("../illustrations/S1_complete.png"))
+
+```
+
+**ALT-TEXT FIGURE \@ref(fig:plot-study1)** *A panel of illustrations providing results and example stimuli for all four experimental conditions in study 1. Smoothed lines show developmental trajectories as the proportion of correct choices against children's ages.*
+
+## Discussion
+
+Children perform above chance in the *Representation* condition at least
+as early as `r p1$months[p1$condition == "Representation"]` months,
+which is the lower limit of the age-range. Based on the literature, it
+is reasonable to assume that also in our setup, children would be able
+to solve the task at hand between the second and third birthday
+[@deloache1992picture; @callaghan2000factors; @callaghan1999early]. This
+result establishes that the task design and setup are sufficiently clear
+even for the youngest children in the sample: they follow the game of
+hide and seek, make the pragmatic inference that their partner is intent
+on helping them with a graphic cue, and can match cue and target
+according to the most basic symbol-referent relationship, namely an
+iconic representation. As the pragmatics of the task are identical
+across conditions, delayed success with other stimuli is unlikely to be
+due to pragmatic inference but rather an inability to grasp the
+symbol-referent-relationship in question. When providing less
+information as in *Pars Pro Toto,* children succeed at about
+`r p1$months[p1$condition == "Pars Pro Toto"]` months. The interaction
+with age shows that performance improves more quickly over time. In the
+more abstract conditions *Simple Form Analogy* and *Complex Form
+Analogy*, preschoolers meet criterion at approximately
+`r p1$months[p1$condition == "Simple Form Analogy"]` and
+`r p1$months[p1$condition == "Complex Form Analogy"]` months
+respectively. While both are still based in iconicity, in so far as
+their interpretation involves a sense of resemblance with regard to
+their shape [@winter2026defining], they are quite abstract and
+demanding. With regard to the influence of surface features, group level
+success occurs slightly earlier with the reduced cues employed in
+*Simple Form Analogy* [@richland2006children]. As such, these findings
+provide estimates for developmental windows when mastery of these
+symbol-referent-relationships is likely to occur: around the third
+birthday for the highly iconic conditions and around the fourth birthday
+for analogies in form. Finally, the results are perfectly in line with
+the hypothesized developmental succession of group level success coming
+to pass first with *Representation*, then *Pars Pro Toto*, *Simple Form
+Analogy* and *Complex Form Analogy*.
+
+# Study 2
+
+Study 2 continues to trace the development of symbolic competencies
+across the preschool-years while reducing iconicity in the
+symbol-referent-relationships. Here, the experimental conditions employ
+different shapes for both cue and target stimuli but draw on
+gestalt-principles like figure-ground-relationship, continuity and
+parallelism to establish reference. In *Absolute Position*, cue and
+target share the same position with regard to the frame they occur in.
+In *Relative Position* cue and target are each composed of two shapes.
+Reference is established by the respective shapes being closer or
+further apart or sharing a position on a horizontal or vertical axis.
+For *Orientation of Object*, symbol and cue are aligned along the same
+axis. The final condition, *Orientation of Feature* employs cue and
+target shapes with a salient feature that is either oriented up- or
+downward. Because processing whole objects is generally less demanding
+than isolating constituent features, and because the position conditions
+require coordinating relations between objects or reference frames
+[@richland2006children; @rattermann1998more; @gentner2017analogy;
+@halford1998processing], our preregistered hypothesis predicted that
+children will succeed earlier with *Orientation of Object* than
+*Orientation of Feature*, and earlier with *Absolute Position* than with
+*Relative Position.* The study was preregistered online prior to data
+collection (please see [Preregistration Study
+2](https://aspredicted.org/L2H_XC7):<https://aspredicted.org/L2H_XC7>).
+Except for stimuli and sample, the methods were identical to study 1.
+
+## Participants and Sample
+
+A total of `r rep.age.table.data["study2", "N"]` three- to
+seven-year-old children (M = `r rep.age.table.data["study2", "Mean"]`
+months, SD = `r rep.age.table.data["study2", "SD"]` months, range
+`r rep.age.table.data["study2", "Min"]` -
+`r rep.age.table.data["study2", "Max"]` months;
+`r rep.age.table.data["study2", "female"]` female) participated. None of
+these children participated in study 1. In addition, a total of
+`r rep.drop.table.data["study2", "N"]` children
+(`r rep.drop.table.data["study2", "female"]` female) were tested but
+excluded from analysis for failing familiarization (N =
+`r rep.drop.table.data["study2", "fail_in_fam"]`), being fussy (N =
+`r rep.drop.table.data["study2", "fussy_child"]`), not being fluent
+enough in German to follow the instructions (N =
+`r rep.drop.table.data["study2", "language"]`), or due to technical
+issues (N = `r rep.drop.table.data["study2", "technical"]`). A total of
+`r sum(rep.s2.trials$Trials)` trials (mean per condition =
+`r mean(rep.s2.trials$Trials)`, range: `r min(rep.s2.trials$Trials)` -
+`r max(rep.s2.trials$Trials)`) from
+`r rep.age.table.data["study2", "N"]` participants were submitted for
+analysis.
+
+## Stimuli
+
+*Absolute Position* and *Relative Position* employed the same distinct
+shapes as cue and target (e.g. circle vs. square, cross). In *Absolute
+Position* target positions were placed in top and bottom, or central and
+peripheral conditions in half of trails. For *Relative Position*, two
+trials present target stimuli that were closer together or further
+apart, as well as another two trials with target components being
+aligned on a horizontal or vertical axis. To ensure that cue and target
+are maximally distinct in all dimensions, cues and target items did not
+align on the same axis. To convey a sense of direction in *Orientation
+of Object,* cues and targets featured elongated shapes that were aligned
+either on a horizontal, vertical, or diagonal axis with rising or
+falling slope. The shapes were distinct oblong ellipses and rectangles
+or less regular shapes with more or less round or square features. For
+*Orientation of Feature*, targets and cues were either circles or
+squares with a salient feature like an opening or a dent. For an
+overview of all stimuli used in Study 2, see figure
+\@ref(fig:plot-study2stimuli).
+
+```{r plot-study2stimuli, fig.cap = "*Stimuli for Study 2.* Panels illustrate (A) an example stimulus combination (distractor, cue, target), and (B) all items of the four conditions with targets in blue and cues as drawings.", fig.align = "center", echo = FALSE, out.width = "95%"}
+
+knitr::include_graphics(knitr::plot_crop("../illustrations/S2_Stimuli.png"))
+
+```
+
+**ALT-TEXT FIGURE \@ref(fig:plot-study2stimuli)** *A panel of illustrations of the stimulus material used in Study 2. The top-row shows an example for a specific trial (cue, target, distractor), the second row has 4x4 matrices with all stimuli of the conditions.*
+
+## Results
+
+Model diagnostics indicated convergence, excellent fit and reliable
+posterior estimates for both full and null model with comparable WAIC
+and ELPD results (cf. supplementary material). In the absence of
+substantial differences, results from the full model are reported below
+in line with the preregistration. *Absolute Position* was used as
+reference category*.* Across all conditions, performance improved with
+both age ($\beta$ = `r S2.full.coef["z.age", "mean"]`, 95% CrI
+[`r S2.full.coef["z.age", "q2.5"]`, `r S2.full.coef["z.age", "q97.5"]`])
+and slightly with trial number ($\beta$ =
+`r S2.full.coef["z.trial", "mean"]`, 95% CrI
+[`r S2.full.coef["z.trial", "q2.5"]`,
+`r S2.full.coef["z.trial", "q97.5"]`]). Compared to *Absolute Position*,
+children were generally less likely to correctly solve *Relative
+Position* ($\beta$ = `r S2.full.coef["RelativePosition", "mean"]`, 95%
+CrI [`r S2.full.coef["RelativePosition", "q2.5"]`,
+`r S2.full.coef["RelativePosition", "q97.5"]`]). Performance in
+*Orientation of Object* ($\beta$ =
+`r S2.full.coef["OrientationofObject", "mean"]`, 95% CrI
+[`r S2.full.coef["OrientationofObject", "q2.5"]`,
+`r S2.full.coef["OrientationofObject", "q97.5"]`]) and *Orientation of
+Feature* ($\beta$ = `r S2.full.coef["OrientationofFeature", "mean"]`,
+95% CrI [`r S2.full.coef["OrientationofFeature", "q2.5"]`,
+`r S2.full.coef["OrientationofFeature", "q97.5"]`]) was not
+substantially different from the reference category *Absolute Position*
+when considering the full age range. Interaction terms between age and
+condition were not credibly different from zero, suggesting similar
+developmental patterns for all conditions. For a side-by-side comparison
+of the developmental trajectories and estimates for ages of group-level
+success, see figure \@ref(fig:plot-study2).
+
+```{r plot-study2, fig.cap = "*Developmental Trajectories for Study 2.* Transparent dots represent individual means for participants. Coloured lines indicate smoothed mean performance by age. Shaded areas represent 95% CrIs. The dashed line demarcates chance level. The colored dots and annotations indicate when children's performance exceeds chance level. Overlays provide example stimuli for each condition.", fig.align = "center", echo = FALSE, out.width = "95%"}
+
+knitr::include_graphics(knitr::plot_crop("../illustrations/S2_complete.png"))
+
+```
+
+**ALT-TEXT FIGURE \@ref(fig:plot-study2)** *A panel of illustrations providing results and example stimuli for all four experimental conditions in study 2. Smoothed lines show developmental trajectories as the proportion of correct choices against children's ages.*
+
+## Discussion
+
+Analyses established that children master the condition *Absolute
+Position* at approximately
+`r p2$months[p2$condition == "Absolute Position"]` months, making it the
+easiest task in study 2. Then in quick succession, children succeed in
+*Orientation of Feature* at about
+`r p2$months[p2$condition == "Orientation of Feature"]` months,
+*Relative Position* at
+`r p2$months[p2$condition == "Relative Position"]` months and
+*Orientation of Object* at
+`r p2$months[p2$condition == "Orientation of Object"]` months. Results
+confirm the hypothesis that children as a group would succeed earlier in
+*Absolute Position* than in *Relative Position* with a clear 5-months
+offset. We hypothesized further that children would succeed earlier with
+*Orientation of Object* than *Orientation of Feature*, but find the
+opposite to be true. The impression of direction or congruence between
+cue and target appears to be much more salient with a salient feature
+pointing out as in *Orientation of Feature*, than an overall alignment
+in the horizontal, vertical or diagonal orientation. At the same time,
+all the estimated ages of success indicate that children succeed with
+these tasks around the fourth birthday.
+
+# Study 3
+
+The final study features symbol-referent relationships that were based
+on analogies in size or number without cues and targets sharing
+similarities in other visual aspects, and while avoiding to draw on
+conventions in graphic communication. In order to correctly interpret
+the symbol-referent relationships employed here, children needed to
+focus on structural features of the graphical displays. Such processes
+can be fostered or obstructed by surface level features of the stimuli
+at hand which makes it harder to assess whether the age at which
+children master a task - our primary aim of investigation - depends more
+on the ability to generally form symbol-referent relationships from
+analogies or from children's developing ability to process visual
+complexity. The two base conditions of study 3 are *Size of Object* and
+*Size of Number.* Here the cues refered to a target shape as a whole via
+an analogy in size or number. As a continuous magnitude, size may be
+easier to grasp and compare for children than discrete magnitudes
+[@leibovich2017sense]. Both are complemented by the conditions *Size of
+Feature* and *Number of Feature* in which the cues refered to a salient
+aspect of the target stimuli. In these cases, extracting relevant
+information is arguably more demanding. Children need to shift attention
+from a holistic apprehension to exploring specific aspects in isolation,
+which should make feature tasks more demanding [@callaghan1990texture;
+@shepp1987development; @diamond2016preschool]. The overall performance
+across the ages as well as the relative offset in the age at which
+children solve a task based on symbol-referent relationships targeting
+objects or their features, can then serve to evaluate such surface-level
+effects across two different domains. Prior to data collection, we
+hypothesized that children will succeed earlier with symbol-referent
+relationships based in size than in number, and that children will
+succeed earlier when cues refer to a target object per se rather than a
+salient feature thereof. The study was preregistered online prior to
+data collection (please see [Preregistration
+Study3](https://aspredicted.org/DR4_B4B):
+<https://aspredicted.org/DR4_B4B>). Except for stimuli and sample, the
+methods were identical to study 1.
+
+## Participants and Sample
+
+A total of `r rep.age.table.data["study3", "N"]` three- to
+seven-year-old children (M = `r rep.age.table.data["study3", "Mean"]`
+months, SD = `r rep.age.table.data["study3", "SD"]` months, range
+`r rep.age.table.data["study3", "Min"]` -
+`r rep.age.table.data["study3", "Max"]` months;
+`r rep.age.table.data["study3", "female"]` female) participated. None of
+these had participated in studies 1 and 2. In addition,
+`r rep.drop.table.data["study3", "N"]` children
+(`r rep.drop.table.data["study3", "female"]` female) were tested but
+excluded for low performance during familiarization (N =
+`r rep.drop.table.data["study3", "fail_in_fam"]`), for not completing at
+least eight out of 16 test trials (N =
+`r rep.drop.table.data["study3", "quit_early"]`), or being fussy (N =
+`r rep.drop.table.data["study3", "fussy_child"]`). Further exclusions
+were necessary due to language problems (N =
+`r rep.drop.table.data["study3", "language"]`) and technical issues (N =
+`r rep.drop.table.data["study3", "technical"]`). For study three,
+`r sum(rep.s3.trials$Trials)` trials (mean per condition =
+`r mean(rep.s3.trials$Trials)`, range: `r min(rep.s3.trials$Trials)` -
+`r max(rep.s3.trials$Trials)`) from
+`r rep.age.table.data["study3", "N"]` participants were submitted for
+analysis.
+
+## Stimuli
+
+In *Size of Object* the targets in a each trial were identical shapes
+that were either small or large with regard to the frame they are
+presented in. To make cue and target shapes as distinct as possible they
+were again employing either squares or circles respectively or less
+canonical shapes such as a random scribble or straight lines (cf. figure
+\@ref(fig:plot-study3stimuli) B). For comparability, *Size of Feature* employed
+the same cues as *Size of Object*, but features target shapes with
+either a relatively large or small void, opening, or protrusion. In
+*Number of Object*, cues and targets were composed of different shapes
+with some being simple line drawings. The displayed quantities were 1
+versus 3, and 2 versus 4. Three- and four-year-olds can reliably
+distinguish these magnitudes explicitly and implicitly without counting
+[@mix2002quantitative]. Special attention was paid to the arrangement of
+the objects to ensure that the cue and target objects do not form a
+similar pattern. This was addressed by presenting the targets depicting
+the magnitudes three and four as if outlining irregular shapes. By
+contrast, the corresponding cues were aligned along a vertical of
+horizontal axis. For comparability, *Number of Feature* employs the same
+cues as *Number of Object*. To evoke a sense of quantity in the closed
+forms serving as choice options, the target shapes in *Number of Feature* either had salient protrusions, or partial areas resulting from incisions. For an overview of all stimuli presented in Study 3, see
+figure \@ref(fig:plot-study3stimuli).
+
+```{r plot-study3stimuli, fig.cap = "*Stimuli for Study 3.* Panels illustrate (A) an example stimulus combination (distractor, cue, target), and (B) all items of the four conditions with targets in blue and cues as drawings.", fig.align = "center", echo = FALSE, out.width = "95%"}
+
+knitr::include_graphics(knitr::plot_crop("../illustrations/S3_Stimuli.png"))
+
+```
+
+**ALT-TEXT FIGURE \@ref(fig:plot-study3stimuli)** *A panel of illustrations of the stimulus material used in Study 3. The top-row shows an example for a specific trial (cue, target, distractor), the second row has 4x4 matrices with all stimuli of the conditions.*
+
+## Results
+
+As above, model diagnostics indicated convergence, excellent fit and
+reliable posterior estimates for both full and null model with
+comparable WAIC and ELPD results (cf. supplementary material). Hence,
+results from the full model are reported below in line with the
+preregistration. *Size of Object* was used as reference category*.*
+Overall, children's performance increased with age ($\beta$ =
+`r S3.full.coef["z.age", "mean"]`, 95% CrI
+[`r S3.full.coef["z.age", "q2.5"]`, `r S3.full.coef["z.age", "q97.5"]`])
+and with trial number ($\beta$ = `r S3.full.coef["z.trial", "mean"]`,
+95% CrI [`r S3.full.coef["z.trial", "q2.5"]`,
+`r S3.full.coef["z.trial", "q97.5"]`]), indicating general improvement
+across development and time-on-task. Relative to *Size of Object*,
+participants were substantially less accurate in *Size of Feature* (beta
+= `r S3.full.coef["SizeofFeature", "mean"]`, 95% CrI
+[`r S3.full.coef["SizeofFeature", "q2.5"]`,
+`r S3.full.coef["SizeofFeature", "q97.5"]`]). A smaller, marginal effect
+was observed in *Number of Feature* ($\beta$ =
+`r S3.full.coef["NumberofFeature", "mean"]`, 95% CrI
+[`r S3.full.coef["NumberofFeature", "q2.5"]`,`r S3.full.coef["NumberofFeature", "q97.5"]`]).
+*Number of Object* ($\beta$ =
+`r S3.full.coef["NumberofObject", "mean"]`, 95% CrI
+[`r S3.full.coef["NumberofObject", "q2.5"]`,
+`r S3.full.coef["NumberofObject", "q97.5"]`]) did not differ reliably
+from *Size of Object*. Age moderated performance less strongly in *Size
+of Feature* ($\beta$ = `r S3.full.coef["SizeofFeature:z.age", "mean"]`,
+95% CrI [`r S3.full.coef["SizeofFeature:z.age", "q2.5"]`,
+`r S3.full.coef["SizeofFeature:z.age", "q97.5"]`]) and *Number of
+Feature* ($\beta$ = `r S3.full.coef["NumberofFeature:z.age", "mean"]`,
+95% CrI [`r S3.full.coef["NumberofFeature:z.age", "q2.5"]`,
+`r S3.full.coef["NumberofFeature:z.age", "q97.5"]`]), suggesting lower
+developmental gains compared to *Size of Object*. Generally, the
+conditions relying on feature-based reference are associated with lower
+overall performance and weaker developmental gains. The best overview of
+the relative performance across conditions and the corresponding
+estimates for the age of success is provided in figure
+\@ref(fig:plot-study3).
+
+```{r plot-study3, fig.cap = "*Developmental Trajectories for Study 3.* Transparent dots represent individual means for participants. Coloured lines indicate smoothed mean performance by age. Shaded areas represent 95% CrIs. The dashed line demarcates chance level. The colored dots and annotations indicate when children's performance exceeds chance level. Overlays provide example stimuli for each condition.", fig.align = "center", echo = FALSE, out.width = "95%"}
+
+knitr::include_graphics(knitr::plot_crop("../illustrations/S3_complete.png"))
+
+```
+
+**ALT-TEXT FIGURE \@ref(fig:plot-study3)** *A panel of illustrations providing results and example stimuli for all four experimental conditions in study 3. Smoothed lines show developmental trajectories as the proportion of correct choices against children's ages.*
+
+## Discussion
+
+Model estimates indicate group level success in *Size of Object* at
+approximately `r p3$months[p3$condition == "Size of Object"]` months, at
+around `r p3$months[p3$condition == "Number of Object"]` months in
+*Number of Object*, and broadly at
+`r p3$months[p3$condition == "Number of Feature"]` months in *Number of
+Feature*. The exception to this pattern is *Size of Feature* where
+children master the task no sooner than about
+`r p3$months[p3$condition == "Size of Feature"]` months of age. We
+hypothesized that children will succeed earlier with analogies in size
+than in number, and that children would succeed earlier when cues refer
+to the target objects per se rather than salient features thereof. We
+find limited support for the hypothesis that the feature conditions are
+generally more demanding. That children succeed a month earlier in
+*Number of Object* than in *Size of Object* as hypothesized is
+negligible especially as the estimates for months of success should be
+interpreted as indicators for relevant developmental age-ranges. While
+*Size of Object* demonstrates when children can grasp size analogies,
+*Size of Feature* stands out as the most difficult condition in the
+series of studies reported above. Success here required shifting
+attention from general appearance to nested object features and this
+ability develops considerably throughout the preschool years
+[@shepp1987development; @callaghan1990texture; @diamond2016preschool].
+
+# Discussion
+
+We presented a concerted three-part research project tracing young
+children’s ability to spontaneously use unfamiliar graphic displays as
+communicative cues in an object-choice task across a wide variety of
+symbol-referent relationships. In three studies with four conditions
+each, we collected data of two children per month of age continuously
+from the third to the seventh birthday for a final sample of 304
+children (Study 1, N = 106; Study 2, N = 99; Study 3, N = 99). We
+provide estimates in months of ages anchoring developmental windows
+during which children as a group are likely perform above chance with
+each symbol-referent relationship using Bayesian GLMMs. Across the
+various conditions, symbolic reference between cue and target was
+established via direct representation, a part-whole relationship,
+analogies in size, number and shape, as well as gestalt-like principles
+like figure-ground relationships, orientation and alignment. Whereas
+previous work on graphic communication has focused almost exclusively on
+direct iconic representations as a way of creating meaning and mostly
+compared performance across binned age-groups, the three studies
+presented here map development continuously using a highly simple and
+streamlined procedure across various types of visual analogies.
+
+By design, the three studies provide a conservative test case of
+children's ability to find meaning in the symbol-referent relationships
+presented. Participants were never directly instructed to search
+specific similarities across cue and target nor prompted to find matches
+per se as is commonly done in match-to-sample designs (e.g. "Which ones
+go together?"). Rather children were told that their interlocutor would
+like to help them find an item in a game of hide and seek and would
+create a drawing for them. Children then had to infer that the
+interlocutors drawings may be read as novel symbolic cues referring to
+either choice option. To prevent learning or demand effects across
+trials, children did not receive feedback for their responses, only saw
+one version of the two possible cues for each target-distractor pairing,
+and were presented with a novel stimulus combination in each trial.
+Hence, children's inferences depended almost exclusively on the specific
+graphic arrangement immediately in front of them.
+
+In Study 1, we found that in *Representation* - with cues that are
+direct outline drawings of the items they refer to - children are better
+than chance at the lower boundary of our age-window. A second condition,
+*Pars Pro Toto*, used the same targets as *Representation*, but the cues
+provided only half of the respective figures to guide children’s
+choices, which children can use at about 38 months of age. This
+demonstrates that by three years of age, children’s symbolic competence
+is still fragile if additional steps such as the straightforward
+completion of a canonical shape is necessary for referential inference.
+Two further conditions aimed at abstracting from the cue while still
+retaining characteristic features of the target shapes with regard to an
+analogy in form, namely whether they were more round or edgy. *Simple
+Form Analogy* and *Complex Form Analogy* yield success at about 50
+months and 47 months. This is the first time a developmental setup
+features an analogy in shape as a means of disambiguation in graphic
+communication. Taken together, study 1 provides a within-subjects
+comparison of young children’s ability to read representational and
+metaphorical uses of form in graphic communication, showing that while
+iconicity marks the entry point for the comprehension of graphic cues,
+more abstract representations are only accessible by the fourth year.
+
+Study 2 explored whether children can infer symbol-referent
+relationships based on orientation and position. In *Absolute Position*,
+cue and target placement were aligned in their frame of presentation
+(e.g. the paper that the symbol was drawn on) and the symbol-referent
+relation was established by the respective positions in their immediate
+visual context. Here children succeeded at approximately 44 months of
+age. In *Relative Position*, target and cue were composed of two figures
+each that were either closer together or further apart, or aligned on a
+vertical or horizontal axis. Here children perform above chance at about
+49 months of age. Success even prior to the fourth birthday in these
+conditions is remarkable as it requires children to identify and compare
+relations (*Absolute Position* – figure/ground; *Relative Position* –
+figure/figure) which is demanding even later throughout the preschool
+years in other contexts [@shivaram2023children; @christie2014language;
+@kroupin2022you]. *Orientation of Object* featured elongated shapes that
+were oriented either horizontally or vertically while cue and target
+shared the same direction. Previous research employing a same-different
+task indicates that children are sensitive to spatial alignment along a
+common axis in juxtaposed graphic displays no sooner than six to eight
+years of age [@yinyuan2022a]. In the context of our study, children
+succeeded at about 50 months. In summary, Study 2 addresses an
+interesting caveat in previous research by presenting stimulus sets
+where cue and target feature different shapes but are composed in
+similar ways. While this requires uncovering abstract relations, these
+relations are by design still based on resemblance on the level of the
+overall composition, and hence, cover a middle ground between iconic and
+abstract representations.
+
+Study 3 set out to further reduce iconicity by drawing analogies in size
+and number. *Number of Object* featured graphic displays with one or
+three items for target and distractor. *Number of Feature* reuses the
+same cues but employs targets varying in number with regard to salient
+features (e.g., spikes or dents). Children succeed in both conditions at
+around 50 months. A different pattern emerges for the two conditions
+featuring size relationships. Children succeed at about 49 months of age
+in *Size of Object*, but ten months later in *Size of Feature*.
+
+A set of major findings emerges from the studies presented here. First,
+our results confirm that symbol-referent relationships are most
+accessible when based on iconicity, becoming increasingly difficult as
+visual similarity decreases [@ganea2008transfer]. This progression
+likely reflects the fact that access to abstract information matures
+later in the preschool years [@callaghan2000factors]. Furthermore,
+children are less likely to spontaneously align or compare stimuli when
+the disparity between comparands increases, a constraint that limits the
+discovery of non-obvious matches [@gentner2017analogy]. These findings
+are of practical relevance for early childhood education as they
+showcase children’s ability to use various expressive dimensions in the
+graphic domain and can guide the design of pedagogical materials by
+showing specifically how accessible various ways of conveying meaning may be. Second, the reduced accuracy in analogy-based and
+feature-referenced tasks are both consistent with evidence that younger
+children tend to focus on surface features rather than relations
+[@richland2006children; @rattermann1998more; @gentner2017analogy],
+making tasks that require attentional shifting or nested comparison
+structures particularly demanding [@halford1998processing]. Shifting
+attention to different aspects of stimuli sets requires children to keep
+track of features they have explored. Therefore, relational or abstract
+as opposed to feature‑based processing taxes working memory and
+inhibitory control more strongly [@gick1980analogical;
+@goswami1991analogical]. This, in turn, points to aspects of cognitive
+maturation that are likely to foster children’s performance in the tasks
+outlined above, as seen in work on the development of executive
+functions — particularly the early emergence and developmental
+trajectories of working memory, inhibitory control, and cognitive
+flexibility in childhood [@deluca2010developmental;
+@diamond2013executive; @reilly2022developmental]. Fourth, just around
+their fourth birthday, children are generally able to identify various
+types of analogies spontaneously in unfamiliar symbolic displays.
+Previous findings have challenged assumptions of domain specificity in
+modalities such as graphic, gestural or verbal communication and rather
+highlighted the flexibility of symbolic and pragmatic abilities
+[@callaghan1999early]. Our findings champion a similar perspective with
+regard to various graphic dimensions and underline the flexibility of
+symbolic cognition across different symbol-referent relationships. For
+conditions that relied strongly on children to abstract from surface
+level features and focus on analogies in form, orientation, size and
+number, there is no strong evidence for sequences in the ages of
+success. Rather, children appear to master all symbol-referent
+relationships in the same age-window, which is indicative of convergent
+development in pragmatic and analogical reasoning skills in the fourth
+year.
+
+To the extent that the studies presented above highlight the fourth
+birthday as a milestone in symbolic development, this connects to a rich
+literature on major developments in this period of middle-childhood. As
+change at this age is again rapid and foundational across a variety of
+cognitive processes [@karmiloff1994beyond; @rakoczy2022foundations],
+several factors are likely to contribute to the convergence of
+above-chance performance across the experimental conditions used here.
+What has been described as the four-year-revolution in social cognition
+endows children with a full-fledged meta-representational theory of mind
+and firmly developed belief-desire psychology [@rakoczy2022foundations;
+@wellman2001meta; @gopnik1988children]. Theory of mind performance, in
+turn, was shown to be correlated with representational insight into the
+standing-for-relationship of pictorial representations
+[@callaghan2012young], as well as insight into communicative intent
+[@callaghan2008artist], and significant progress in perspective-taking
+abilities [@flavell1981young]. All of which are necessary or conducive
+for the flexible and spontaneous interpretation of graphic displays as
+well as inference-based or pragmatically challenging communicative
+behavior broadly construed. Specifically helpful for the tasks employed
+here may be developmental gains typically occurring around the fourth
+birthday in the domain of analogical reasoning [@shivaram2023children;
+@christie2014language; @gentner1977children], which are again fostered
+by a suite of executive function skills improving significantly during
+this important period in child development [@thibaut2010development;
+@bohn2023individual]. Focusing on various aspects of the
+stimulus-combinations, working memory [@simms2018working;
+@richland2006children] is crucial for keeping track of features children
+have explored. To succeed they are furthermore required to suppress
+irrelevant aspects of the stimuli and inhibit distracting impulses
+solving demanding tasks [@carlson2007inhibitory;
+@jablonski2014inhibitory].
+
+While work on analogical reasoning abilities has highlighted that
+preschoolers are generally able to identify agreement in graphic
+displays and specifically involving size, number, and shape also at the
+age of four [@kroupin2022you; @kroupin2022importance], this has mostly
+been established in match-to-sample paradigms where children are
+conventionally presented with three items and prompted with a phrase
+such as “which ones go together” directly inducing the cognitive
+operation tested. In our task, children make matches and comparisons
+across various dimensions without any verbal scaffolding addressing the
+match-making process or the dimension of comparison and, hence,
+showcases abilities for implicit judgement across a wide variety of
+visual analogies. Therefore, our work provides a crucial extension to
+the literature on analogical reasoning by showing that children can
+actually put their developing skills to work in the practical context of
+a versatile communicative coordination game requiring both relational
+reasoning and pragmatic inference [@cooperrider2017gesture].
+
+The studies described here have limitations that future research needs
+to address. The combinations of outline drawings and geometric shapes we
+used here could also be presented in a standard match-to-sample
+procedure in which children are solely asked to find a match between cue
+and target. When directly instructed to match stimuli and without the
+need for considering context, children may succeed earlier. To connect
+the work presented here with the literature on analogical reasoning,
+future work should present children with the same set of stimuli in the
+context of both paradigms. Another general problem is that the project
+aims to establish developmental trajectories but does so only in a
+single, industrialized population [@henrich2010weirdest] and with the
+relatively small number of about two participants for any month of age.
+Future work needs to address the role of enculturation and specifically
+the influence of permanent exposure to symbolic and pictorial
+illustrations, writing and numbers or depictions featuring canonical
+shapes - ideally doing so both by investigating a larger number of
+children drawing from various cultural settings, as well as less
+industrialized communities [@dehaene2006core; @callaghan2012young].
+Second, our work needs to be complemented with studies employing an
+individual-differences perspective to untangle the relative
+contributions of knowledge about various conventional systems of
+reference, pragmatic skills and the growth of basic level cognitive
+capacities. Finally, it would be highly valuable to complement the
+current results on the comprehension of unfamiliar symbols by
+establishing at what ages children would be able to use their skills in
+the production of graphic communication and, thereby, inform theories on
+the development of communication systems broadly construed
+[@bohn2019young; @raviv2018systematicity; @nolle2020language;
+@callaghan1999early]. The results here demonstrate that at least by the
+age of four, they would be apt receivers of symbolic creations whose
+reference is based on iconicity, synecdoche, alignment, orientation, as
+well as analogies in form, size and number.
+
+\newpage
+
+# References
+
+::: {#refs custom-style="Bibliography"}
+:::
