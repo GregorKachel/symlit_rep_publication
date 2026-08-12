@@ -1,6 +1,5 @@
 ---
-title             : "SUPPLEMENTARY MATERIAL for 
-                    Young Children’s Spontaneous Comprehension of Symbol-Referent Relationships in the Graphic Domain"
+title             : "SUPPLEMENTARY MATERIAL Young Children’s Spontaneous Comprehension of Symbol-Referent Relationships in the Graphic Domain"
 shorttitle        : "Supplementary Material"
 author: 
   - name          : "Gregor Kachel"
