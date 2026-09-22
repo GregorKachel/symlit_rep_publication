@@ -7,7 +7,7 @@ author:
     corresponding : yes    # Define only one corresponding author
     address       : "Universitätsallee 1, C1.008a, 21335 Lüneburg"
     email         : "gregor.kachel&#64;leuphana.de"
-  - name          : "Daniel Haun"
+  - name          : "Daniel B. M. Haun"
     affiliation   : "2"
   - name          : "Manuel Bohn"
     affiliation   : "1"
@@ -2559,7 +2559,7 @@ knitr::include_graphics(knitr::plot_crop("../illustrations/plot_supp_exclusions_
 # Model Diagnostics and Comparisons
 
 ## Study 1
-Posterior predictive checks (PPC) for both full and null model indicated
+Posterior predictive checks (PPC) for both full and null models indicated
 excellent fit of observed data and model predictions. Rhat values in
 both models were equal to one, indicating convergence across all chains.
 Effective sample sizes for all fixed effects in the full model (Bulk
@@ -2571,28 +2571,11 @@ mean = `r round(mean(S1.null.coef$ess_bulk), 0)`, range
 `r round(max(S1.null.coef$ess_bulk), 0)`) were \> 1000, indicating
 reliable posterior estimations.
 
-Comparing the models using weights based on the Widely Applicable
-Information Criterion (WAIC) yielded
-`r round(S1.weights["S1.full.bm","value"]*100,2)`% of the model weight
-for the full model, and
-`r round(S1.weights["S1.null.bm","value"]*100,2)`% for the null model.
-Hence, the full model generally had a higher probability of making
-accurate predictions. Directly comparing the models' WAIC via expected
-log predictive density (ELPD) corroborates this (ELPD WAIC; full model =
-`r round(S1.comp["S1.full.bm", "elpd_waic"],2)`; null model =
-`r round(S1.comp["S1.null.bm", "elpd_waic"],2)`). The standard error of
-the difference in predictive accuracy (SE =
-`r round(S1.comp["S1.null.bm", "se_diff"],2)`) is not much larger than
-the difference itself (ELPD diff =
-`r round(S1.comp["S1.null.bm", "elpd_diff"],2)`). Hence, evidence in
-favor of this model is not decisive. A similar comparison via
-Leave-One-Out Cross-Validation (LOO) provided essentially the same
-results. In absence of conclusive evidence for either model, we report
-the results for the full model in line with the preregistration.
+Comparing the models using weights based on the Widely Applicable Information Criterion (WAIC) yielded `r round(S1.weights["S1.full.bm","value"]*100,2)`% of the model weight for the full model, and `r round(S1.weights["S1.null.bm","value"]*100,2)`% for the null model. Hence, the full model generally had a higher probability of making accurate predictions. Directly comparing the models' WAIC via expected log predictive density (ELPD) corroborates this (ELPD WAIC; full model = `r round(S1.comp["S1.full.bm", "elpd_waic"],2)`; null model = `r round(S1.comp["S1.null.bm", "elpd_waic"],2)`). The difference in predictive accuracy (ELPD diff = `r round(S1.comp["S1.null.bm", "elpd_diff"],2)`) was smaller than its standard error (SE = `r round(S1.comp["S1.null.bm", "se_diff"],2)`), indicating that the evidence in favor of the full model is not decisive. A similar comparison via Leave-One-Out Cross-Validation (LOO) provided essentially the same results. In the absence of conclusive evidence for either model, we report the results for the full model in line with the preregistration.
 
 ## Study 2
 
-For both full and null model, PPCs indicate excellent fit of observed
+For both full and null models, PPCs indicate excellent fit of observed
 data and model predictions. Rhat values in both models were equal to
 one, indicating convergence across all chains. Effective sample sizes
 for all fixed effects in the full model (Bulk ESS, mean =
@@ -2615,14 +2598,11 @@ between models (ELPD Diff =
 `r round(S2.comp["S2.full.bm", "elpd_diff"],2)`) falls within the bounds
 of uncertainty (SE = `r round(S2.comp["S2.full.bm", "se_diff"],2)`),
 suggesting no advantage in predictive accuracy. Hence, the preregistered
-analyses using the full model is reported below.
+analyses using the full model are reported below.
 
 ## Study 3
 
-PPCs indicated excellent fit of observed data and model predictions in
-both models. Model diagnostics were drawn for the full and null model in
-study 3. Rhat values in both models were equal to one, indicating
-convergence across all chains. Effective sample sizes for all fixed
+PPCs indicated excellent fit of observed data and model predictions in both models. Rhat values in both models were equal to one, indicating convergence across all chains. Effective sample sizes for all fixed
 effects in the full model (Bulk ESS, mean =
 `r round(mean(S3.full.coef$ess_bulk), 0)`, range
 `r round(min(S3.full.coef$ess_bulk), 0)` -
@@ -2640,7 +2620,7 @@ values also favored the full model (WAIC =
 `r round(S3.comp["S3.null.bm", "waic"],2)`). Despite the slightly lower
 WAIC and higher ELPD of the full model, the difference in predictive
 accuracy (ELPD Diff = `r round(S3.comp["S3.null.bm", "elpd_diff"],2)`)
-remains almost within the range of sampling uncertainty (SE =
+remains within the range of sampling uncertainty (SE =
 `r round(S3.comp["S3.null.bm", "se_diff"],2)`). In the absence of
 substantial differences, the full model is reported below in line with
 the preregistration.
@@ -2967,74 +2947,25 @@ ft
 
 In addition to our main analyses, we preregistered additional
 exploratory analyses for evaluating item-level effects separately in
-each study. For this we added a crossed random effects for items,
+each study. For this we added crossed random effects for items,
 allowing the relationship between age and performance to vary across
-items (correct \~ condition\*z.age + z.trial + sex + (z.trial \|subid)).
+items (correct \~ condition\*z.age + z.trial + sex + (z.trial \| subid) +(z.age \| item)).
 Due to the lower number of individual items within a task, we expected
 these models to be less diagnostic with regard to our main research
-question. However, the analyses provides detail about the equivalence of
+question. However, the analyses provide detail about the equivalence of
 items within conditions.
 
 ## Study 1
 
-An exploratory model with additional item-level random effects showed
-that the variability of intercepts at the item level was small ($\beta$
-= `r S1.item.coef["sd_item__Intercept", "mean"]`, 95% CrI
-[`r S1.item.coef["sd_item__Intercept", "q2.5"]`,`r S1.item.coef["sd_item__Intercept", "q97.5"]`]).
-Likewise there was only modest variation for the effect of age across
-items ($\beta$ = `r S1.item.coef["sd_item__z.age", "mean"]`, 95% CrI
-[`r S1.item.coef["sd_item__z.age", "q2.5"]`,`r S1.item.coef["sd_item__z.age", "q97.5"]`]).
-The correlation between item difficulty and item-specific age slopes was
-highly uncertain (ρ =
-`r S1.item.coef["cor_item__Intercept__z.age", "mean"]`, 95% CrI
-[`r S1.item.coef["cor_item__Intercept__z.age", "q2.5"]`,`r S1.item.coef["cor_item__Intercept__z.age", "q97.5"]`]).
-Model weights based on the WAIC suggested that the full model was more
-likely to provide accurate predictions (weight =
-`r round(S1.itemvsfull.weights["S1.full.bm","value"]*100,2)`% ) compared
-to the item model (weight =
-`r round(S1.itemvsfull.weights["S1.item.model","value"]*100,2)`%).The
-estimated difference in expected log predictive density (elpd) between
-models, however, was not much larger than the difference itself (ELPD
-diff = `r round(S1.itemvsfull.comp["S1.item.model", "elpd_diff"],2)`),
-indicating considerable uncertainty as to whether either model was
-preferable. For on overview of logg odds for all items across conditions
-see figure \@ref(fig:plot-study123itemintercepts). For a full overview
-of coefficients and the random effects structure of the item model see
-table \@ref(tab:S1item-coef-table).
+An exploratory model with additional item-level random effects showed that the variability of intercepts at the item-level was small ($\beta$ = `r S1.item.coef["sd_item__Intercept", "mean"]`, 95% CrI [`r S1.item.coef["sd_item__Intercept", "q2.5"]`,`r S1.item.coef["sd_item__Intercept", "q97.5"]`]). Likewise there was only modest variation for the effect of age across items ($\beta$ = `r S1.item.coef["sd_item__z.age", "mean"]`, 95% CrI [`r S1.item.coef["sd_item__z.age", "q2.5"]`,`r S1.item.coef["sd_item__z.age", "q97.5"]`]). The correlation between item difficulty and item-specific age slopes was highly uncertain (ρ = `r S1.item.coef["cor_item__Intercept__z.age", "mean"]`, 95% CrI [`r S1.item.coef["cor_item__Intercept__z.age", "q2.5"]`,`r S1.item.coef["cor_item__Intercept__z.age", "q97.5"]`]). 
+
+Model weights based on the WAIC suggested that the full model was more likely to provide accurate predictions (weight = `r round(S1.itemvsfull.weights["S1.full.bm","value"]*100,2)`%) compared to the item model (weight = `r round(S1.itemvsfull.weights["S1.item.model","value"]*100,2)`%). The difference in expected log predictive density was negligible (ELPD diff = `r round(S1.itemvsfull.comp["S1.item.model", "elpd_diff"],2)`), and within the range of sampling uncertainty (SE =`r round(S1.itemvsfull.comp["S1.item.model", "se_diff"],2)`). For an overview of log odds for all items across conditions see Figure \@ref(fig:plot-study123itemintercepts). For a full overview of coefficients and the random effects structure of the item model see Table \@ref(tab:S1item-coef-table).
 
 ## Study 2
 
-An exploratory model including item-level random effects indicated
-modest variability ($\beta$ =
-`r S2.item.coef["sd_item__Intercept", "mean"]`, 95% CrI
-[`r S2.item.coef["sd_item__Intercept", "q2.5"]`,`r S2.item.coef["sd_item__Intercept", "q97.5"]`]).
-The variability of age effects across items was small ($\beta$ =
-`r S2.item.coef["sd_item__z.age", "mean"]`, 95% CrI
-[`r S2.item.coef["sd_item__z.age", "q2.5"]`,
-`r S2.item.coef["sd_item__z.age", "q97.5"]`]), suggesting that the
-effect of age was fairly consistent across items. The correlation
-between item intercepts and age slopes was near zero and highly
-uncertain (ρ = `r S2.item.coef["cor_item__Intercept__z.age", "mean"]`,
-95% CrI
-[`r S2.item.coef["cor_item__Intercept__z.age", "q2.5"]`,`r S2.item.coef["cor_item__Intercept__z.age", "q97.5"]`]),
-providing no reliable evidence that slightly easier or difficult items
-varied in age-related gains. Comparing the models using WAIC weights
-showed that including item-level random effects in Study 2 did not
-provide a clear advantage in out-of-sample predictive accuracy (full
-model `r round(S2.itemvsfull.weights["S2.full.bm","value"]*100,2)`%;
-item model
-`r round(S2.itemvsfull.weights["S2.item.model","value"]*100,2)`%).
-Comparing the models corroborates this (ELPD WAIC; full model =
-`r round(S2.itemvsfull.comp["S2.full.bm", "elpd_waic"],2)`; item model =
-`r round(S2.itemvsfull.comp["S2.item.model", "elpd_waic"],2)`). The
-difference in expected log predictive density was negligible (ELPD diff
-= `r round(S2.itemvsfull.comp["S2.item.model", "elpd_diff"],2)`), and
-within the range of sampling uncertainty (SE
-=`r round(S2.itemvsfull.comp["S2.item.model", "se_diff"],2)`). For an
-overview of item level variability across conditions see figure
-\@ref(fig:plot-study123itemintercepts). For a full table of coefficients
-and random effects of the exploratory model see table
-\@ref(tab:S2item-coef-table).
+An exploratory model including item-level random effects indicated modest variability ($\beta$ = `r S2.item.coef["sd_item__Intercept", "mean"]`, 95% CrI [`r S2.item.coef["sd_item__Intercept", "q2.5"]`,`r S2.item.coef["sd_item__Intercept", "q97.5"]`]). The variability of age effects across items was small ($\beta$ = `r S2.item.coef["sd_item__z.age", "mean"]`, 95% CrI [`r S2.item.coef["sd_item__z.age", "q2.5"]`, `r S2.item.coef["sd_item__z.age", "q97.5"]`]), suggesting that the effect of age was fairly consistent across items. The correlation between item intercepts and age slopes was near zero and highly uncertain (ρ = `r S2.item.coef["cor_item__Intercept__z.age", "mean"]`, 95% CrI [`r S2.item.coef["cor_item__Intercept__z.age", "q2.5"]`,`r S2.item.coef["cor_item__Intercept__z.age", "q97.5"]`]), providing no reliable evidence that slightly easier or more difficult items varied in age-related gains. 
+
+Comparing the models using WAIC weights showed that including item-level random effects in Study 2 did not provide a clear advantage in out-of-sample predictive accuracy (full model `r round(S2.itemvsfull.weights["S2.full.bm","value"]*100,2)`%; item model `r round(S2.itemvsfull.weights["S2.item.model","value"]*100,2)`%). Comparing the models corroborates this (ELPD WAIC; full model = `r round(S2.itemvsfull.comp["S2.full.bm", "elpd_waic"],2)`; item model = `r round(S2.itemvsfull.comp["S2.item.model", "elpd_waic"],2)`). The difference in expected log predictive density was negligible (ELPD diff = `r round(S2.itemvsfull.comp["S2.item.model", "elpd_diff"],2)`), and within the range of sampling uncertainty (SE =`r round(S2.itemvsfull.comp["S2.item.model", "se_diff"],2)`). For an overview of item-level variability across conditions see Figure \@ref(fig:plot-study123itemintercepts). For a full table of coefficients and random effects of the exploratory model see Table \@ref(tab:S2item-coef-table).
 
 ## Study 3
 
@@ -3063,25 +2994,15 @@ difference in expected log predictive density favored the item model
 `r round(S3.itemvsfull.comp["S3.full.bm", "elpd_diff"],2)`), though the
 uncertainty around this estimate suggests that the evidence is not
 decisive (SE =`r round(S3.itemvsfull.comp["S3.full.bm", "se_diff"],2)`).
-Graphically exploring item-level variability via logg odds indicates
+Graphically exploring item-level variability via log odds indicates
 that the estimated deviation from the intercept is still including zero
-(cf. figure \@ref(fig:plot-study123itemintercepts)). For an overview of
-coefficients and random effects see table \@ref(tab:S3item-coef-table)
+(cf. Figure \@ref(fig:plot-study123itemintercepts)). For an overview of
+coefficients and random effects see Table \@ref(tab:S3item-coef-table)
 in appendix 3.
 
 ## Discussion
 
-In studies 1 and 2, the inclusion of item-level random effects did not
-meaningfully improve model fit. The main analyses reported in the
-manuscript and the exploratory models reported here account for the data
-equally well. For study 3, including item-level random effects yielded
-moderate variability. Here the analysis provides modest evidence for
-variability due to item level effects. As in all studies reported above,
-these were small compared to the participant random effects. None of the
-model comparisons provided substantial evidence for a better fit of the
-exploratory models. Hence, the additional analyses provided here provide
-no grounds for deterring from the preregistered analysis reported in the
-manuscript.
+In Studies 1 and 2, the inclusion of item-level random effects did not meaningfully improve model fit. The main analyses reported in the manuscript and the exploratory models reported here account for the data equally well. For Study 3, including item-level random effects yielded moderate variability. Here the analysis provides modest evidence for variability due to item-level effects. As in all studies reported above, these were small compared to the participant random effects. While Study 3 showed a slight numerical preference for the item model, the ELPD difference remained well within the range of uncertainty ($SE = 3.25$). Thus, across all studies, there was no decisive evidence for dismissing the preregistered analysis reported in the manuscript.
 
 \newpage
 
